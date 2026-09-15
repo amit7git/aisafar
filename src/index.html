@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="color-scheme" content="dark">
+    <meta name="theme-color" content="#06080a">
+    <meta name="description" content="Radio Safar — every mood has a journey. Live highway radio: Bollywood, 90s nostalgia, bhakti and more.">
+    <!-- Official Radio Safar browser branding -->
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <title>Radio Safar — Every mood has a journey.</title>
+
+    <!-- Google Fonts for Dashboard Telemetry & Hindi Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rozha+One&text=%E0%A4%B0%E0%A5%87%E0%A4%A1%E0%A4%BF%E0%A4%AF%E0%A5%8B%20%E0%A4%B8%E0%A4%AB%E0%A4%B0&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@800&family=Plus+Jakarta+Sans:wght@400;500;700;800;900&family=Tiro+Devanagari+Hindi&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- ===== RADIO SAFAR CINEMATIC LAYERED BACKGROUND ===== -->
+    <div class="radio-background" aria-hidden="true">
+
+        <!-- Layer 1: Night highway photo (portrait crop on mobile) -->
+        <picture class="radio-bg__photo">
+            <source media="(max-width: 650px)" srcset="/radio-safar-highway-mobile.jpg">
+            <img class="radio-bg__art" src="/radio-safar-highway-desktop.jpg" alt=""
+                 decoding="async" fetchpriority="high">
+        </picture>
+
+        <!-- Layer 2: grade plate (warm amber grade + deep charcoal/midnight edges) -->
+        <div class="radio-bg__grade"></div>
+
+        <!-- Layer 3: warm bokeh / distant headlights -->
+        <div class="radio-bg__bokeh"></div>
+
+        <!-- Atmospheric haze behind the title -->
+        <div class="radio-bg__haze"></div>
+
+        <!-- Indian truck-art texture (hidden until looked at closely) -->
+        <svg class="radio-bg__truckart radio-bg__truckart--pattern" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <symbol id="rsMarigold">
+                    <g fill="#a5681f">
+                        <circle cx="0" cy="-12" r="6" />
+                        <circle cx="8.5" cy="-8.5" r="6" />
+                        <circle cx="12" cy="0" r="6" />
+                        <circle cx="8.5" cy="8.5" r="6" />
+                        <circle cx="0" cy="12" r="6" />
+                        <circle cx="-8.5" cy="8.5" r="6" />
+                        <circle cx="-12" cy="0" r="6" />
+                        <circle cx="-8.5" cy="-8.5" r="6" />
+                    </g>
+                    <circle cx="0" cy="0" r="7" fill="#c9882f" />
+                </symbol>
+                <symbol id="rsPeacock">
+                    <ellipse cx="0" cy="-10" rx="8" ry="20" fill="none" stroke="#6b4a14" stroke-width="2" />
+                    <ellipse cx="0" cy="-10" rx="3.5" ry="12" fill="none" stroke="#a5681f" stroke-width="2" />
+                    <circle cx="0" cy="-10" r="2.5" fill="#a5681f" />
+                    <line x1="0" y1="10" x2="0" y2="20" stroke="#8a5a1c" stroke-width="2" />
+                    <circle cx="0" cy="16" r="1.4" fill="#c9882f" />
+                </symbol>
+                <pattern id="rsTruckArt" width="420" height="420" patternUnits="userSpaceOnUse">
+                    <g opacity="0.9">
+                        <use href="#rsMarigold" transform="translate(70, 70)" />
+                        <use href="#rsMarigold" transform="translate(96, 416) scale(0.7)" />
+                        <use href="#rsPeacock" transform="translate(120, 300) scale(0.8)" />
+                        <g fill="#8a5a1c" opacity="0.8">
+                            <circle cx="340" cy="60" r="5" />
+                            <circle cx="356" cy="76" r="5" />
+                            <circle cx="372" cy="92" r="5" />
+                        </g>
+                        <g fill="none" stroke="#8a5a1c" stroke-width="1.2" opacity="0.7">
+                            <rect x="4" y="4" width="412" height="412" />
+                        </g>
+                        <g stroke="#c9882f" stroke-width="2" stroke-dasharray="0 26" stroke-linecap="round" opacity="0.7">
+                            <line x1="30" y1="14" x2="390" y2="14" />
+                            <line x1="30" y1="406" x2="390" y2="406" />
+                        </g>
+                    </g>
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#rsTruckArt)" />
+        </svg>
+
+        
+
+        <!-- Layer: truck-art ornamental strip (bottom edge) -->
+        <svg class="radio-bg__truckart radio-bg__truckart--bottom" viewBox="0 0 1600 150"
+             preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <symbol id="rsBMarigold">
+                    <g fill="#a5681f">
+                        <circle cx="0" cy="-12" r="6" />
+                        <circle cx="8.5" cy="-8.5" r="6" />
+                        <circle cx="12" cy="0" r="6" />
+                        <circle cx="8.5" cy="8.5" r="6" />
+                        <circle cx="0" cy="12" r="6" />
+                        <circle cx="-8.5" cy="8.5" r="6" />
+                        <circle cx="-12" cy="0" r="6" />
+                        <circle cx="-8.5" cy="-8.5" r="6" />
+                    </g>
+                    <circle cx="0" cy="0" r="7" fill="#c9882f" />
+                </symbol>
+            </defs>
+            <g opacity="0.85">
+                <line x1="0" y1="16" x2="1600" y2="16" stroke="#8a5a1c" stroke-width="2" />
+                <line x1="0" y1="46" x2="1600" y2="46" stroke="#6b4a14" stroke-width="2" />
+                <line x1="0" y1="30" x2="1600" y2="30" stroke="#a5681f" stroke-width="24"
+                      stroke-linecap="round" stroke-dasharray="0 46" opacity="0.7" />
+                <use href="#rsBMarigold" x="250" y="88" />
+                <use href="#rsBMarigold" x="650" y="92" />
+                <use href="#rsBMarigold" x="1050" y="88" />
+                <use href="#rsBMarigold" x="1450" y="92" />
+            </g>
+        </svg>
+
+        <!-- Layer: truck-art corner flourish (top-right) -->
+        <svg class="radio-bg__truckart radio-bg__truckart--corner" viewBox="0 0 280 240"
+             xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <symbol id="rsCMarigold">
+                    <g fill="#a5681f">
+                        <circle cx="0" cy="-12" r="6" />
+                        <circle cx="8.5" cy="-8.5" r="6" />
+                        <circle cx="12" cy="0" r="6" />
+                        <circle cx="8.5" cy="8.5" r="6" />
+                        <circle cx="0" cy="12" r="6" />
+                        <circle cx="-8.5" cy="8.5" r="6" />
+                        <circle cx="-12" cy="0" r="6" />
+                        <circle cx="-8.5" cy="-8.5" r="6" />
+                    </g>
+                    <circle cx="0" cy="0" r="7" fill="#c9882f" />
+                </symbol>
+            </defs>
+            <g opacity="0.85">
+                <use href="#rsCMarigold" transform="translate(196, 52) scale(1.1)" />
+                <use href="#rsCMarigold" transform="translate(232, 118) scale(0.85)" />
+                <use href="#rsCMarigold" transform="translate(240, 168) scale(0.6)" />
+                <path d="M40 240 Q110 196 190 170 T296 200" fill="none" stroke="#8a5a1c"
+                      stroke-width="2" stroke-linecap="round" />
+                <g fill="#8a5a1c" opacity="0.8">
+                    <circle cx="120" cy="196" r="4" />
+                    <circle cx="156" cy="184" r="4" />
+                    <circle cx="214" cy="182" r="4" />
+                </g>
+            </g>
+        </svg>
+
+        <!-- Title typography (dominant identity) -->
+        <div class="radio-bg__label">
+            <span class="radio-bg__title">रेडियो सफर</span>
+            <span class="radio-bg__tagline">EVERY MOOD HAS A JOURNEY</span>
+            <div class="bumper" id="bumper" aria-hidden="true">
+                <span class="bumper__text" id="bumperText" lang="hi" aria-live="off">बुरी नज़र वाले तेरा मुँह काला</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subtle film grain -->
+    <div class="film-grain" aria-hidden="true"></div>
+
+    <!-- ===== HEADER GAUGES ===== -->
+    <header class="header">
+        <div class="clock header-item" id="clock" aria-label="Current time">
+            <span id="clockHour">12</span>
+            <span class="clock-colon">:</span>
+            <span id="clockMinute">00</span>
+            <span class="clock-period" id="clockPeriod">AM</span>
+        </div>
+
+        <div class="highway header-item">
+            <span id="onlineText" lang="hi">🟢 555 मुसाफ़िर</span>
+        </div>
+
+        <div class="header-actions header-item">
+            <button class="book-ticket-btn" id="bookTicketBtn" type="button" aria-haspopup="dialog" title="Book Ticket">
+                <span class="book-ticket-btn__icon" aria-hidden="true">🎫</span>
+                <span class="book-ticket-btn__label">Book Ticket</span>
+            </button>
+            <button class="info-button" id="infoBtn" type="button" aria-label="Information" title="Information">
+                i
+            </button>
+        </div>
+    </header>
+
+    <!-- ===== FIXED ANCHORED TRANSPARENT PLAYER CONTAINER ===== -->
+    <main class="player">
+        <section class="console" id="console" aria-label="Radio Safar player">
+
+            <!-- Collapsible Deck Content -->
+            <div class="player-content" id="playerContent">
+
+                <!-- CD & Title Deck -->
+                <div class="top">
+                    <div class="cd" aria-hidden="true">
+                        <div class="art" id="cdArt"></div>
+                    </div>
+                    <div class="track-info">
+                        <div class="track-badge">
+                            <span>RADIO SAFAR</span>
+                            <div class="sound-wave">
+                                <span></span><span></span><span></span>
+                            </div>
+                        </div>
+                        <div class="track" id="trackTitle" aria-live="polite">Loading the road…</div>
+                    </div>
+                    <div class="safar-controls">
+                        <button class="mood-button" id="moodBtn" type="button" aria-label="Open mood selector" aria-haspopup="dialog">
+                            <span class="mood-label">SAFAR</span>
+                            <span class="mood-current" id="moodCurrent">90s Safar</span>
+                        </button>
+                        <button class="control" id="playlistBtn" type="button" aria-label="Open playlist" aria-haspopup="dialog" title="Playlist">
+                            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h13v2H3V6zm0 5h13v2H3v-2zm0 5h9v2H3v-2zm15 0v-5h2v5h5v2h-5v5h-2v-5h-5v-2h5z"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stereo VU Meter LED Strip with Radio Safar RJ Center Badge -->
+                <div class="led-vu-strip" id="ledVuStrip" aria-hidden="true">
+                    <span class="vu-label">L</span>
+                    <div class="vu-meter left">
+                        <span class="vu-seg g" style="--d: 0.05s"></span>
+                        <span class="vu-seg g" style="--d: 0.15s"></span>
+                        <span class="vu-seg g" style="--d: 0.25s"></span>
+                        <span class="vu-seg g" style="--d: 0.35s"></span>
+                        <span class="vu-seg y" style="--d: 0.45s"></span>
+                        <span class="vu-seg y" style="--d: 0.55s"></span>
+                        <span class="vu-seg r" style="--d: 0.65s"></span>
+                        <span class="vu-seg r" style="--d: 0.75s"></span>
+                    </div>
+                    <div class="vu-center-badge">Radio Safar RJ</div>
+                    <div class="vu-meter right">
+                        <span class="vu-seg g" style="--d: 0.08s"></span>
+                        <span class="vu-seg g" style="--d: 0.18s"></span>
+                        <span class="vu-seg g" style="--d: 0.28s"></span>
+                        <span class="vu-seg g" style="--d: 0.38s"></span>
+                        <span class="vu-seg y" style="--d: 0.48s"></span>
+                        <span class="vu-seg y" style="--d: 0.58s"></span>
+                        <span class="vu-seg r" style="--d: 0.68s"></span>
+                        <span class="vu-seg r" style="--d: 0.78s"></span>
+                    </div>
+                    <span class="vu-label">R</span>
+                </div>
+
+                <!-- Progress & Audio Scrubber -->
+                <div class="progress">
+                    <div class="seek-wrap">
+                        <input class="seek" id="seek" type="range" min="0" max="0" value="0" step="1" aria-label="Track progress">
+                    </div>
+                    <div class="times">
+                        <span id="timeCurrent">0:00</span>
+                        <span id="timeTotal">0:00</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ===== CONTROLS BAR (Always Pinned in Place) ===== -->
+            <div class="controls-wrapper">
+                <div class="controls" id="playerControls">
+
+                    <!-- 1. HORN -->
+                    <button class="control" id="hornBtn" type="button" aria-label="Bus horn" title="Bus horn">
+                        📯
+                    </button>
+
+                    <!-- 2. SHUFFLE -->
+                    <button class="control" id="shuffleBtn" type="button" aria-label="Shuffle" aria-pressed="false" title="Shuffle">
+                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
+                    </button>
+
+                    <!-- 3. PREVIOUS -->
+                    <button class="control" id="prevBtn" type="button" aria-label="Previous track" title="Previous track">
+                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                    </button>
+
+                    <!-- 4. PLAY / PAUSE (HERO) -->
+                    <button class="control play" id="playBtn" type="button" aria-label="Play" title="Play">
+                        <svg class="ico i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+                        <svg class="ico i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                    </button>
+
+                    <!-- 5. NEXT -->
+                    <button class="control" id="nextBtn" type="button" aria-label="Next track" title="Next track">
+                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18l8.5-6L6 6v12zm10-12v12h2V6h-2z"/></svg>
+                    </button>
+
+                    <!-- 6. MUTE / UNMUTE -->
+                    <button class="control" id="muteBtn" type="button" aria-label="Mute" aria-pressed="false" title="Mute">
+                        <svg class="ico i-unmuted" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05A4.5 4.5 0 0 0 16.5 12zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                        <svg class="ico i-muted" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05A4.5 4.5 0 0 0 16.5 12zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/><line x1="3.5" y1="20.5" x2="20.5" y2="3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    </button>
+
+                    <!-- 7. MINIMIZE (Fixed button on the far right) -->
+                    <button class="control minimize-btn" id="minimizeBtn" type="button" aria-label="Minimize player" aria-expanded="true" title="Minimize player">
+                        <svg class="ico i-min" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 11h14v2H5z"/></svg>
+                        <svg class="ico i-plus" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg>
+                    </button>
+
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- ===== PLAYLIST MODAL ===== -->
+    <div class="modal" id="playlistModal" role="dialog" aria-modal="true" aria-labelledby="playlistHeading" aria-hidden="true">
+        <div class="panel">
+            <div class="panel-head">
+                <div>
+                    <div class="heading" id="playlistHeading">RADIO SAFAR PLAYLIST</div>
+                    <div class="count" id="playlistCount">LOADING TRACKS…</div>
+                </div>
+                <button class="control" id="closePlaylist" type="button" aria-label="Close playlist">✕</button>
+            </div>
+            <div class="playlist" id="playlistList">
+                <p class="song-artist">Reading playlist…</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MOOD SELECTOR MODAL ===== -->
+    <div class="modal" id="moodModal" role="dialog" aria-modal="true" aria-labelledby="moodHeading" aria-hidden="true">
+        <div class="panel">
+            <div class="panel-head">
+                <div>
+                    <div class="heading" id="moodHeading">CHOOSE YOUR SAFAR</div>
+                    <div class="count" id="moodCount">SELECT A PLAYLIST</div>
+                </div>
+                <button class="control" id="closeMood" type="button" aria-label="Close mood selector">✕</button>
+            </div>
+            <div class="playlist" id="moodList" aria-label="Mood playlists"></div>
+        </div>
+    </div>
+
+    <!-- ===== REDESIGNED ABOUT / INFO MODAL ===== -->
+    <div class="modal" id="infoModal" role="dialog" aria-modal="true" aria-labelledby="infoHeading" aria-hidden="true">
+        <div class="info-panel">
+            <div class="info-accent" aria-hidden="true"></div>
+
+            <button class="control info-close-btn" id="closeInfo" type="button" aria-label="Close information">✕</button>
+
+            <div class="info-brand">
+                <div class="info-kicker">WELCOME TO</div>
+                <div class="info-heading" id="infoHeading">RADIO <span class="text-accent">SAFAR</span></div>
+                <div class="info-tagline">Every mood has a journey.</div>
+                <p class="info-blurb">A nostalgic highway radio gliding through India's evergreen melodies — for slow nights, open roads, and the songs that made the miles feel short.</p>
+            </div>
+
+            <div class="info-divider" aria-hidden="true"><span></span></div>
+
+            <div class="creator-card">
+                <img class="creator-photo" id="creatorPhoto" src="/profile.jpg"
+                     alt="Amit Sahani — Creator of Radio Safar" width="52" height="52" loading="lazy">
+                <div class="creator-details">
+                    <div class="creator-name">
+                        <span>Amit Sahani</span>
+                        <span class="verified-badge" title="Verified creator" aria-label="Verified creator">✓</span>
+                    </div>
+                    <div class="creator-role">Creator of Radio Safar</div>
+                    <a class="instagram-btn" href="https://www.instagram.com/iamith/" target="_blank" rel="noopener noreferrer" aria-label="Instagram @iamith">
+                        <!-- Official Instagram SVG -->
+                        <svg class="insta-svg" viewBox="0 0 24 24" width="15" height="15" fill="none">
+                            <path fill="url(#insta-grad)" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                            <defs>
+                                <linearGradient id="insta-grad" x1="2" y1="22" x2="22" y2="2" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#fdf497"/>
+                                    <stop offset="5%" stop-color="#fdf497"/>
+                                    <stop offset="45%" stop-color="#fd5949"/>
+                                    <stop offset="60%" stop-color="#d6249f"/>
+                                    <stop offset="90%" stop-color="#285AEB"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <span>@iamith</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="info-features">
+                <div class="feature">
+                    <span class="feature-icon" aria-hidden="true">🎵</span>
+                    <span><strong>1,000+ handpicked songs</strong> — evergreen Bollywood, 90s nostalgia, and highway anthems.</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon" aria-hidden="true">📻</span>
+                    <span><strong>Live highway stream</strong> — a synchronized journey for night drives and deep focus.</span>
+                </div>
+            </div>
+
+            <div class="song-request-box">
+                <span class="request-label">Want your favourite song on Radio Safar?</span>
+                <span>DM <a class="inline-link" href="https://www.instagram.com/iamith/" target="_blank" rel="noopener noreferrer">@iamith</a> your suggestions to get them featured in our upcoming Sunday release.</span>
+            </div>
+
+            <div class="disclaimer">
+                <strong>Disclaimer:</strong>
+                <span>All songs featured on Radio Safar are streamed via YouTube playlists. We respect and honor all original artists, composers, record labels, and copyright owners. This project is created purely for non-commercial enjoyment and music lovers.</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== RADIO SAFAR TRAVELS — Radio Safar personalized e-ticket (fictional, client-side only) ===== -->
+    <div class="modal modal--drawer" id="ticketModal" role="dialog" aria-modal="true" aria-labelledby="ticketHeading" aria-hidden="true">
+        <div class="ticket-panel">
+            <button class="control ticket-close" id="closeTicket" type="button" aria-label="Close ticket">✕</button>
+
+            <!-- STAGE 1 — Board Your Radio Safar -->
+            <div class="ticket-stage" id="ticketFormStage">
+                <div class="tf-head">
+                    <div class="tf-kicker">RADIO SAFAR TRAVELS LIMITED</div>
+                    <h2 class="tf-title" id="ticketHeading">Board Your Radio Safar</h2>
+                    <p class="tf-desc">Enter a few details and we'll create your Radio Safar Travels journey ticket.</p>
+                    <p class="tf-notice">This is a fun Radio Safar experience ticket — not a real bus reservation.</p>
+                </div>
+
+                <form id="ticketForm" novalidate>
+                    <label class="tf-field">
+                        <span class="tf-label">Passenger Name <span class="req">*</span></span>
+                        <input id="tfName" name="name" type="text" placeholder="Amit Sahani" maxlength="60" autocomplete="off" spellcheck="false">
+                        <span class="tf-error" id="errName"></span>
+                    </label>
+
+                    <div class="tf-grid">
+                        <label class="tf-field">
+                            <span class="tf-label">Age <span class="req">*</span></span>
+                            <input id="tfAge" name="age" type="number" min="1" max="99" step="1" inputmode="numeric" placeholder="28">
+                            <span class="tf-error" id="errAge"></span>
+                        </label>
+                        <label class="tf-field">
+                            <span class="tf-label">Gender <em>(optional)</em></span>
+                            <select id="tfGender" name="gender">
+                                <option value="">Prefer not to say</option>
+                                <option>Male</option>
+                                <option>Female</option>
+                                <option>Other</option>
+                            </select>
+                            <span class="tf-error" id="errGender"></span>
+                        </label>
+                        <label class="tf-field">
+                            <span class="tf-label">Passenger Type <em>(optional)</em></span>
+                            <select id="tfType" name="passengerType">
+                                <option value="Adult">Adult</option>
+                                <option value="Child">Child</option>
+                            </select>
+                            <span class="tf-error" id="errType"></span>
+                        </label>
+                        <label class="tf-field">
+                            <span class="tf-label">Date of Journey <span class="req">*</span></span>
+                            <input id="tfDate" name="journeyDate" type="date">
+                            <span class="tf-error" id="errDate"></span>
+                        </label>
+                        <label class="tf-field">
+                            <span class="tf-label">Starting City <em>(optional)</em></span>
+                            <input id="tfStart" name="startCity" type="text" placeholder="Bengaluru" maxlength="50" autocomplete="off" spellcheck="false">
+                            <span class="tf-error" id="errStart"></span>
+                        </label>
+                        <label class="tf-field">
+                            <span class="tf-label">Destination City <em>(optional)</em></span>
+                            <input id="tfDest" name="destCity" type="text" placeholder="Coimbatore" maxlength="50" autocomplete="off" spellcheck="false">
+                            <span class="tf-error" id="errDest"></span>
+                        </label>
+                    </div>
+
+                    <button class="control tf-submit" id="tfGenerate" type="submit">Generate Journey</button>
+                </form>
+            </div>
+
+            <!-- STAGE 2 — Personalized ticket preview -->
+            <div class="ticket-stage" id="ticketResultStage">
+                <article class="ticket" id="ticket" aria-label="Personalized Radio Safar journey ticket">
+                    <header class="ticket-head">
+                        <div class="ticket-head__brand">
+                            <img class="ticket-logo" src="/radio-safar-icon-1024.png"
+                                 alt="Radio Safar" width="44" height="44">
+                            <div class="ticket-head__text">
+                                <div class="ticket-station">RADIO SAFAR</div>
+                                <div class="ticket-subtitle">RADIO SAFAR TRAVELS LIMITED</div>
+                                <div class="ticket-voucher">E-Ticket / Reservation Voucher</div>
+                            </div>
+                        </div>
+                        <div class="ticket-qr ticket-qr--head" aria-hidden="true"></div>
+                    </header>
+
+                    <div class="ticket-route ticket-route--banner">
+                        <div class="ticket-route__title">RADIO SAFAR JOURNEY</div>
+                        <div class="ticket-route__pair">
+                            <span class="ticket-route__label">FROM</span>
+                            <b data-fill="start">—</b>
+                        </div>
+                        <span class="ticket-route__arrow" aria-hidden="true">→</span>
+                        <div class="ticket-route__pair ticket-route__pair--end">
+                            <span class="ticket-route__label">DESTINATION</span>
+                            <b data-fill="dest">—</b>
+                        </div>
+                        <div class="ticket-route__meta">DEPARTURE <span data-fill="departure">—</span> <span class="tk-sep">•</span> BAY <span data-fill="bay">—</span> <span class="tk-sep">•</span> VIA <span data-fill="nh">—</span> <span class="tk-sep">•</span> <span data-fill="date">—</span></div>
+                    </div>
+
+                    <section class="ticket-section">
+                        <div class="ticket-section__title">Journey Details</div>
+                        <ul class="ticket-receipt">
+                            <li class="t-row"><span>Class of Service</span><b>AC SLEEPER</b></li>
+                            <li class="t-row"><span>Bus Type/Model</span><b data-fill="busType">—</b></li>
+                            <li class="t-row"><span>Vehicle Registration No.</span><b class="tk-mono" data-fill="regNo">—</b></li>
+                            <li class="t-row"><span>Boarding Bay</span><b data-fill="boardingBay">—</b></li>
+                            <li class="t-row"><span>Reporting Time</span><b data-fill="reportingTime">—</b></li>
+                            <li class="t-row"><span>Captain</span><b data-fill="captain">—</b></li>
+                            <li class="t-row"><span>Luggage Allowance</span><b data-fill="luggage">—</b></li>
+                            <li class="t-row"><span>Seat No(s)</span><b data-fill="seat">—</b></li>
+                        </ul>
+                    </section>
+
+                    <section class="ticket-section">
+                        <div class="ticket-section__title">Passenger Information</div>
+                        <ul class="ticket-receipt">
+                            <li class="t-row"><span>Passenger Name</span><b data-fill="name">—</b></li>
+                            <li class="t-row"><span>Age</span><b data-fill="age">—</b></li>
+                            <li class="t-row"><span>Adult / Child</span><b data-fill="type">—</b></li>
+                            <li class="t-row"><span>Gender</span><b data-fill="gender">—</b></li>
+                            <li class="t-row"><span>Origin</span><b data-fill="start">—</b></li>
+                            <li class="t-row"><span>Destination</span><b data-fill="dest">—</b></li>
+                        </ul>
+                    </section>
+
+                    <section class="ticket-section">
+                        <div class="ticket-section__title">Booking References</div>
+                        <div class="ticket-refs">
+                            <div class="ticket-ref"><span>PNR Number</span><b class="tk-mono" data-fill="pnr">—</b></div>
+                            <div class="ticket-ref"><span>Trip Code</span><b class="tk-mono" data-fill="tripcode">—</b></div>
+                            <div class="ticket-ref"><span>Transaction ID</span><b class="tk-mono" data-fill="txn">—</b></div>
+                            <div class="ticket-ref"><span>Ticket ID</span><b class="tk-mono" data-fill="ticketid">—</b></div>
+                        </div>
+                    </section>
+
+                    <section class="ticket-section">
+                        <div class="ticket-section__title">Current Radio Safar</div>
+                        <ul class="ticket-receipt">
+                            <li class="t-row"><span>Safar</span><b data-fill="safar">—</b></li>
+                            <li class="t-row"><span>Now Playing</span><b data-fill="song">—</b></li>
+                            <li class="t-row t-row--artist" data-fill="artist"><span>Artist</span><b>—</b></li>
+                        </ul>
+                    </section>
+
+                    <section class="ticket-section">
+                        <div class="ticket-section__title">Fare Details</div>
+                        <ul class="ticket-receipt">
+                            <li class="t-row"><span>Base Fare</span><b>₹450.00</b></li>
+                            <li class="t-row"><span>Nostalgia Surcharge</span><b>₹99.00</b></li>
+                            <li class="t-row"><span>Chai Tax (GST)</span><b>₹50.00</b></li>
+                            <li class="t-row t-row--total"><span>Total Fare</span><b class="tk-fare" data-fill="fare">—</b></li>
+                            <li class="t-row t-row--words"><span>Fare (in words)</span><b class="tk-words" data-fill="fareWords">—</b></li>
+                        </ul>
+                        <div class="tk-no-payment">Experience Ticket — NO PAYMENT REQUIRED.</div>
+                    </section>
+
+                    <section class="ticket-section">
+                        <div class="ticket-section__title">Important Passenger Terms</div>
+                        <ul class="ticket-fineprint">
+                            <li><span class="tfp-head">Luggage &amp; Liability:</span> Radio Safar Travels Limited is not responsible for lost items, lost time, or getting lost in 90s music nostalgia.</li>
+                            <li><span class="tfp-head">Cancellation Policy:</span> No cash refunds allowed. All refunds will be issued in the form of 3 additional romantic highway tracks.</li>
+                            <li><span class="tfp-head">Passenger Protocol:</span> Passengers engaging in dramatic window-staring must ensure their head-bobbing remains within their allocated berth space.</li>
+                        </ul>
+                        <ol class="ticket-rules">
+                            <li>This ticket is valid for one passenger and unlimited good vibes. Bad vibes must get off at the next imaginary stop.</li>
+                            <li>Window seats provide premium views of real roads, fake scenery, and roads that only exist in your imagination.</li>
+                            <li>When your favourite song starts playing, smiling is compulsory. Dramatic head-bobbing is highly recommended.</li>
+                            <li>Skipping a song is allowed. Skipping the entire Safar is strictly against Radio Safar law.</li>
+                            <li>Rain Mode may cause nostalgia, sudden chai cravings, highway memories, and staring dramatically out of imaginary windows.</li>
+                            <li>Spontaneous singing is guaranteed. Radio Safar is not liable for annoyed neighbors.</li>
+                            <li>Radio Safar Travels Limited is not responsible for passengers accidentally falling in love with a song.</li>
+                            <li>Chai breaks are imaginary but highly recommended. Please provide your own chai.</li>
+                            <li>Seat numbers are decorative and cannot be used to start a fight with another passenger.</li>
+                            <li>No actual bus, seat, reservation or payment is included with this ticket. Your journey is powered entirely by music and imagination.</li>
+                        </ol>
+                    </section>
+
+                    <div class="ticket-perforation" aria-hidden="true"></div>
+
+                    <footer class="ticket-foot">
+                        <div class="ticket-foot__copy">PASSENGER COPY</div>
+                        <div class="ticket-foot__carrier">RADIO SAFAR TRAVELS LIMITED</div>
+                        <div class="ticket-foot__brand">RADIO SAFAR</div>
+                        <div class="ticket-foot__note">A fictional Radio Safar experience ticket — not a real reservation.</div>
+                    </footer>
+                </article>
+
+                <div class="ticket-actions">
+                    <button class="control" id="ticketEdit" type="button">← Edit Details</button>
+                    <button class="control" id="ticketDownload" type="button">⬇ Download PDF Ticket</button>
+                    <button class="control" id="ticketShare" type="button">↗ Share PDF Ticket</button>
+                </div>
+            </div>
+
+            <p class="ticket-status" id="ticketStatus" role="status"></p>
+        </div>
+    </div>
+
+    <!-- ===== सफ़र साथी — FLOATING RADIO COMPANION ===== -->
+    <div class="saathi">
+        <div class="saathi-panel" id="aiModal" role="dialog" aria-modal="false" aria-labelledby="aiHeading" aria-hidden="true">
+            <div class="saathi-panel__head">
+                <div>
+                    <div class="heading" id="aiHeading">सफ़र साथी</div>
+                    <div class="count" id="aiCount">Your AI Radio Companion</div>
+                    <p class="saathi-desc" id="aiDesc">Ask me to play a Safar, change the mood, skip a song, or control your music.</p>
+                </div>
+                <button class="control" id="closeAi" type="button" aria-label="Close Safar Saathi">✕</button>
+            </div>
+            <div class="ai-thread" id="aiThread" aria-live="polite"></div>
+            <div class="ai-starters" id="aiStarters" aria-label="Quick suggestions"></div>
+            <form class="ai-compose" id="aiCompose" novalidate>
+                <input class="ai-input" id="aiInput" type="text"
+                       placeholder="Boliye, aaj ka safar kaisa ho?…" maxlength="500"
+                       autocomplete="off" spellcheck="false"
+                       aria-label="Ask Safar Saathi">
+                <button class="control ai-send" id="aiSend" type="button" aria-label="Send to Safar Saathi">
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                </button>
+            </form>
+        </div>
+        <button class="saathi-launcher" id="aiBtn" type="button"
+                aria-label="Open Safar Saathi" aria-haspopup="dialog" aria-expanded="false" title="सफ़र साथी">
+            <svg class="saathi-launcher__icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5.4 13.2V12a6.6 6.6 0 0 1 13.2 0v1.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <rect x="3.2" y="11.4" width="4.6" height="6.6" rx="2.3" fill="currentColor"/>
+                <rect x="16.2" y="11.4" width="4.6" height="6.6" rx="2.3" fill="currentColor"/>
+                <path d="M9.2 8.9a4.4 4.4 0 0 1 0 3.4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.85"/>
+                <path d="M6.9 6.9a7.6 7.6 0 0 1 0 6.6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0.55"/>
+                <path d="M19.2 4.2l.5 1.15 1.15.5-1.15.5-.5 1.15-.5-1.15-1.15-.5 1.15-.5z" fill="currentColor"/>
+            </svg>
+            <span class="saathi-launcher__dot" aria-hidden="true"></span>
+            <span class="saathi-launcher__ring" aria-hidden="true"></span>
+        </button>
+    </div>
+
+    <!-- ===== RAIN MODE (bottom-left) ===== -->
+    <button class="rain-btn" id="rainBtn" type="button" aria-pressed="false" aria-label="Toggle rain mode" title="Rain">
+        <span class="rain-btn__icon" aria-hidden="true">🌧️</span>
+        <span class="rain-btn__label">Rain</span>
+    </button>
+
+    <!-- YouTube Audio Player Embed -->
+    <div id="youtubeAudio" aria-hidden="true"></div>
+
+    <!-- Entry Script -->
+    <script type="module" src="/main.js"></script>
+
+</body>
+</html>
