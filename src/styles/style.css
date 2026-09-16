@@ -1638,353 +1638,18 @@ input:focus-visible {
     }
 }
 
-/* ===== सफ़र साथी — FLOATING RADIO COMPANION ===== */
 .header-actions {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-/* Floating launcher — a warm glass mic button anchored bottom-right */
-.saathi-launcher {
-    position: fixed;
-    right: 18px;
-    bottom: 18px;
-    z-index: 61;
-    width: 58px;
-    height: 58px;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    color: #141a0a;
-    background:
-        radial-gradient(circle at 32% 28%, rgba(255, 230, 170, 0.95), rgba(255, 170, 29, 0.85) 48%, #cc7a00 100%);
-    border: 1px solid rgba(255, 220, 130, 0.75);
-    box-shadow:
-        0 10px 26px rgba(0, 0, 0, 0.55),
-        0 0 22px rgba(255, 170, 29, 0.35),
-        inset 0 1px 1px rgba(255, 255, 255, 0.45);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.18s ease;
-    isolation: isolate;
-}
-
-.saathi-launcher:hover {
-    transform: translateY(-2px) scale(1.05);
-    box-shadow:
-        0 14px 30px rgba(0, 0, 0, 0.6),
-        0 0 32px rgba(255, 170, 29, 0.5),
-        inset 0 1px 1px rgba(255, 255, 255, 0.5);
-}
-
-.saathi-launcher:active {
-    transform: translateY(1px) scale(0.96);
-}
-
-.saathi-launcher--active {
-    background: linear-gradient(145deg, #ffe9b0 0%, var(--accent) 46%, var(--accent-dark) 100%);
-    border-color: #ffe9b0;
-    box-shadow:
-        0 10px 26px rgba(0, 0, 0, 0.55),
-        0 0 0 3px rgba(255, 170, 29, 0.22),
-        0 0 30px rgba(255, 170, 29, 0.85),
-        inset 0 1px 1px rgba(255, 255, 255, 0.6);
-    color: #0b0d10;
-}
-
-/* Small ON indicator — a bright dot pinned to the launcher corner.
-   Absolutely positioned, so opening Safar Saathi never shifts layout. */
-.saathi-launcher__dot {
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    width: 11px;
-    height: 11px;
-    border-radius: 50%;
-    background: var(--neon-green);
-    border: 2px solid rgba(6, 8, 10, 0.9);
-    box-shadow: 0 0 10px var(--neon-green), 0 0 18px rgba(34, 255, 136, 0.7);
-    opacity: 0;
-    transform: scale(0.4);
-    transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.saathi-launcher--active .saathi-launcher__dot {
-    opacity: 1;
-    transform: scale(1);
-}
-
-.saathi-launcher__icon {
-    width: 26px;
-    height: 26px;
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
-}
-
-/* Soft pulsing ring inviting the first click */
-.saathi-launcher__ring {
-    position: absolute;
-    inset: -5px;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 170, 29, 0.55);
-    animation: saathiPing 2.6s ease-out infinite;
-    pointer-events: none;
-}
-
-/* Active state: brighter animated outer ring/pulse — clearly different */
-.saathi-launcher--active .saathi-launcher__ring {
-    animation: saathiPingActive 1.5s ease-out infinite;
-    border-color: rgba(255, 233, 176, 0.95);
-    opacity: 1;
-}
-
-@keyframes saathiPing {
-    0% { transform: scale(0.86); opacity: 0.9; }
-    70%, 100% { transform: scale(1.22); opacity: 0; }
-}
-
-@keyframes saathiPingActive {
-    0% { transform: scale(0.9); opacity: 0.9; }
-    70%, 100% { transform: scale(1.42); opacity: 0; }
-}
-
-/* Floating chat panel above the launcher — never a full-screen overlay */
-.saathi-panel {
-    position: fixed;
-    right: 18px;
-    bottom: 92px;
-    z-index: 60;
+/* Clock + mobile-only Rain control (column stack, header left) */
+.clock-col {
     display: flex;
     flex-direction: column;
-    width: min(370px, calc(100vw - 24px));
-    max-height: min(70vh, 560px);
-    border-radius: 20px;
-    border: 1px solid rgba(255, 190, 80, 0.35);
-    background: linear-gradient(160deg, rgba(24, 20, 12, 0.97) 0%, rgba(12, 10, 8, 0.98) 100%);
-    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 170, 29, 0.1);
-    opacity: 0;
-    transform: translateY(10px) scale(0.97);
-    transform-origin: bottom right;
-    pointer-events: none;
-    transition: opacity 0.2s ease, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-    overflow: hidden;
-}
-
-.saathi-panel.open {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    pointer-events: auto;
-}
-
-.saathi-panel__head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 18px;
-    border-bottom: 1px solid rgba(255, 190, 80, 0.16);
-    background:
-        radial-gradient(120% 100% at 0% 0%, rgba(255, 170, 29, 0.16), transparent 62%),
-        rgba(255, 255, 255, 0.02);
-}
-
-.saathi-panel__head .heading {
-    font-family: var(--hindi);
-    font-size: 17px;
-    letter-spacing: 0.02em;
-    color: var(--accent-light);
-}
-
-.saathi-panel__head .count {
-    margin-top: 3px;
-}
-
-.saathi-desc {
-    margin-top: 3px;
-    max-width: 260px;
-    font-family: var(--sans);
-    font-size: 11px;
-    line-height: 1.5;
-    color: var(--text-muted);
-}
-
-.saathi-panel__head .control {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    font-size: 12px;
-}
-
-.ai-thread {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    padding: 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 170, 29, 0.45) transparent;
-}
-
-.ai-thread::-webkit-scrollbar {
-    width: 6px;
-}
-
-.ai-thread::-webkit-scrollbar-thumb {
-    background: rgba(255, 170, 29, 0.45);
-    border-radius: 99px;
-}
-
-.ai-msg {
-    max-width: 86%;
-    border-radius: 14px;
-    padding: 10px 14px;
-    font-size: 13.5px;
-    line-height: 1.55;
-    color: rgba(248, 250, 252, 0.92);
-}
-
-.ai-msg p {
-    margin: 0;
-}
-
-.ai-msg--ai {
-    align-self: flex-start;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 190, 80, 0.22);
-    border-bottom-left-radius: 4px;
-}
-
-.ai-msg--user {
-    align-self: flex-end;
-    background: linear-gradient(145deg, var(--accent), var(--accent-dark));
-    border: 1px solid rgba(255, 213, 115, 0.45);
-    border-bottom-right-radius: 4px;
-    color: #141a0a;
-    font-weight: 700;
-}
-
-.ai-msg--error {
-    align-self: flex-start;
-    background: rgba(255, 51, 68, 0.1);
-    border: 1px solid rgba(255, 51, 68, 0.4);
-    color: #ffb3bb;
-}
-
-.ai-msg--typing {
-    min-width: 56px;
-    display: flex;
-    align-items: center;
-}
-
-.ai-msg--typing .sound-wave {
-    display: inline-flex;
-    height: 14px;
-    gap: 3px;
-}
-
-.ai-msg--typing .sound-wave span {
-    width: 3px;
-    height: 100%;
-}
-
-.ai-starters {
-    display: flex;
-    flex-wrap: wrap;
+    align-items: flex-start;
     gap: 8px;
-    padding: 12px 18px;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.ai-starters--hidden {
-    display: none;
-}
-
-.ai-chip {
-    padding: 7px 13px;
-    border-radius: 99px;
-    border: 1px solid rgba(255, 170, 29, 0.4);
-    background: rgba(255, 170, 29, 0.06);
-    color: var(--accent-light);
-    font-family: var(--mono);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    white-space: nowrap;
-    cursor: pointer;
-    user-select: none;
-    touch-action: manipulation;
-    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
-}
-
-.ai-chip:hover {
-    background: rgba(255, 170, 29, 0.14);
-    border-color: rgba(255, 170, 29, 0.7);
-    box-shadow: 0 0 14px rgba(255, 170, 29, 0.22);
-}
-
-.ai-compose {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 16px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(255, 255, 255, 0.02);
-}
-
-.ai-input {
-    flex: 1;
-    min-width: 0;
-    padding: 11px 14px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 190, 80, 0.22);
-    background: rgba(10, 14, 20, 0.6);
-    color: #fff;
-    font-family: var(--sans);
-    font-size: 13.5px;
-    outline: none;
-    transition: border-color 0.2s ease;
-}
-
-.ai-input::placeholder {
-    color: rgba(248, 250, 252, 0.45);
-}
-
-.ai-input:focus {
-    border-color: rgba(255, 170, 29, 0.65);
-    box-shadow: 0 0 0 3px rgba(255, 170, 29, 0.12);
-}
-
-.ai-input:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
-}
-
-.ai-send {
-    width: 42px;
-    height: 42px;
-    flex: 0 0 42px;
-    border-radius: 10px;
-    color: var(--accent-light);
-}
-
-.ai-send .ico {
-    width: 18px;
-    height: 18px;
-}
-
-.ai-send:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-.ai-send[aria-busy="true"] .ico {
-    animation: sendPulse 0.9s ease-in-out infinite;
-}
-
-@keyframes sendPulse {
-    0%, 100% { transform: translateY(0); opacity: 1; }
-    50% { transform: translateY(-2px); opacity: 0.55; }
 }
 
 @media (max-width: 650px) {
@@ -1995,35 +1660,6 @@ input:focus-visible {
     .highway {
         min-width: 0;
         max-width: calc(100vw - 175px);
-    }
-
-    .saathi-launcher {
-        right: 10px;
-        bottom: max(10px, env(safe-area-inset-bottom));
-        width: 50px;
-        height: 50px;
-    }
-
-    .saathi-launcher__icon {
-        width: 22px;
-        height: 22px;
-    }
-
-    .saathi-panel {
-        right: 10px;
-        bottom: 78px;
-        width: min(370px, calc(100vw - 20px));
-        max-height: min(72vh, 560px);
-    }
-
-    .ai-thread {
-        padding: 14px;
-    }
-}
-
-@media (max-height: 560px) {
-    .saathi-panel {
-        max-height: calc(100vh - 96px);
     }
 }
 
@@ -2088,6 +1724,20 @@ input:focus-visible {
     white-space: nowrap;
 }
 
+/* Mobile-only Rain button — hidden on desktop, rendered directly below the clock.
+   Defined after .rain-btn so its static/display overrides win with equal specificity. */
+.rain-btn--mobile {
+    position: static;
+    display: none;
+    z-index: auto;
+    padding: 5px 12px;
+    font-size: 10px;
+}
+
+.rain-btn--mobile .rain-btn__icon {
+    font-size: 12px;
+}
+
 /* Rain Mode — full-viewport canvas layer painted by JS.
    Fixed, covers the whole viewport, sits above the highway background (z 0/1/2),
    below the player (z 20), header (z 10) and all controls. Never intercepts input. */
@@ -2103,11 +1753,14 @@ input:focus-visible {
 }
 
 @media (max-width: 650px) {
+    /* On mobile the floating bottom-left control is replaced by the mobile-only
+       Rain button that sits directly below the clock in the header. */
     .rain-btn {
-        left: 10px;
-        bottom: max(10px, env(safe-area-inset-bottom));
-        padding: 8px 12px;
-        font-size: 10px;
+        display: none;
+    }
+
+    .rain-btn--mobile {
+        display: inline-flex;
     }
 
     .rain-btn__icon {

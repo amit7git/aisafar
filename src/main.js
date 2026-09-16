@@ -3,9 +3,7 @@ import { MOOD_PLAYLISTS } from './config/playlists.js';
 import { BUMPERS } from './config/bumpers.js';
 import { buildBumperPool } from './config/bumper-library.js';
 import { initClock } from './components/clock.js';
-import { initAiSafar, isAiOpen } from './components/ai-safar.js';
 import { initTicket, closeTicketModal } from './components/ticket.js';
-import { registerAiSwitchSafarHandler, registerAiUiSync } from './services/ai-actions.js';
 import { playBusHorn } from './services/horn.js';
 import { initPresence } from './services/presence.js';
 import {
@@ -36,8 +34,7 @@ import {
     next as cmdNext,
     previous as cmdPrevious,
     toggleShuffle,
-    selectSafar,
-    isShuffleOn
+    selectSafar
 } from './services/radio-commands.js';
 import {
     renderMoodList,
@@ -90,6 +87,7 @@ import {
         moodList: $("moodList"),
         moodCount: $("moodCount"),
         rainBtn: $("rainBtn"),
+        rainBtnMobile: $("rainBtnMobile"),
         muteBtn: $("muteBtn"),
         ticketBtn: $("bookTicketBtn"),
         ticketModal: $("ticketModal"),
@@ -123,10 +121,7 @@ import {
     // 1. Digital Clock
     initClock();
 
-    // 1b. AI Safar Companion (self-contained; read-only player context)
-    initAiSafar();
-
-    // 1c. Radio Safar Travels ticket experience (self-contained; read-only state)
+    // 1b. Radio Safar Travels ticket experience (self-contained; read-only state)
     initTicket(ui);
 
     // V3.1 — watch the ticket drawer so the LED status can reflect its state
@@ -351,17 +346,6 @@ import {
         ui.shuffle.setAttribute("aria-pressed", String(isNowShuffled));
     });
 
-    // AI Safar — sync visual UI from existing state getters after a dispatched action
-    // (shuffle indicator, mood button, playlist heading). Never stores its own copy
-    // of player state; reads only from the command layer / youtube.js.
-    function syncAiUi() {
-        ui.shuffle.setAttribute("aria-pressed", String(isShuffleOn()));
-        updateMoodButton(ui, activeMood);
-        $("playlistHeading").textContent = MOOD_PLAYLISTS[activeMood]?.playlistTitle || "";
-    }
-    registerAiSwitchSafarHandler(key => switchMood(key));
-    registerAiUiSync(syncAiUi);
-
     ui.horn.addEventListener("click", () =>
         playBusHorn(
             () => ui.horn.classList.add("horn-active"),
@@ -415,11 +399,14 @@ import {
     const RAIN_VOLUME = 0.18;
 
     function rainLabel() {
-        const label = ui.rainBtn.querySelector(".rain-btn__label");
-        if (label) label.textContent = rainOn ? "Rain ON" : "Rain";
-        ui.rainBtn.setAttribute("aria-pressed", String(rainOn));
-        ui.rainBtn.setAttribute("title", rainOn ? "Rain ON — tap to stop" : "Rain");
-        ui.rainBtn.setAttribute("aria-label", rainOn ? "Turn rain mode off" : "Turn rain mode on");
+        [ui.rainBtn, ui.rainBtnMobile].forEach(btn => {
+            if (!btn) return;
+            const label = btn.querySelector(".rain-btn__label");
+            if (label) label.textContent = rainOn ? "Rain ON" : "Rain";
+            btn.setAttribute("aria-pressed", String(rainOn));
+            btn.setAttribute("title", rainOn ? "Rain ON — tap to stop" : "Rain");
+            btn.setAttribute("aria-label", rainOn ? "Turn rain mode off" : "Turn rain mode on");
+        });
     }
 
     function placeRainButton() {
@@ -611,18 +598,45 @@ import {
     }
 
     ui.rainBtn.addEventListener("click", toggleRain);
+    ui.rainBtnMobile?.addEventListener("click", toggleRain);
     window.addEventListener("resize", placeRainButton);
     placeRainButton();
     rainLabel();
 
     // 7. Scrubber / Seekbar Listeners
-  // Seekbar — debounced, fires only ONCE on release
+    // Commit-on-release: the visuals track the finger instantly, but the player
+    // receives exactly ONE seekTo per gesture (on release) — never a flood while
+    // dragging, and never a stale overwrite when seeks happen in quick succession.
     let seekCommitted = false;
+    let seekPointerId = null;
 
-    ui.seek.addEventListener("pointerdown", () => {
+    function beginSeek(pointerId) {
+        seekPointerId = pointerId;
         setSeekingState(true);
         seekCommitted = false;
         ui.console.classList.add("seeking");     // ← pause animations while dragging
+        if (pointerId !== undefined && typeof ui.seek.setPointerCapture === "function") {
+            try { ui.seek.setPointerCapture(pointerId); } catch {}
+        }
+    }
+
+    function endSeek() {
+        if (seekPointerId !== null) {
+            if (typeof ui.seek.releasePointerCapture === "function") {
+                try { ui.seek.releasePointerCapture(seekPointerId); } catch {}
+            }
+            seekPointerId = null;
+        }
+        ui.console.classList.remove("seeking");  // ← resume animations after seek
+        setSeekingState(false);
+        if (!seekCommitted) {
+            seekCommitted = true;
+            try { commitSeek(ui); } catch {}
+        }
+    }
+
+    ui.seek.addEventListener("pointerdown", event => {
+        beginSeek(event.pointerId);
     });
 
     ui.seek.addEventListener("input", () => {
@@ -630,19 +644,23 @@ import {
         ui.current.textContent = formatTime(ui.seek.value);
     });
 
-    ui.seek.addEventListener("pointerup", () => {
-        ui.console.classList.remove("seeking");  // ← resume animations after seek
-        if (!seekCommitted) {
-            seekCommitted = true;
-            commitSeek(ui);
-        }
+    ui.seek.addEventListener("pointerup", event => {
+        if (event.pointerId === seekPointerId) endSeek();
     });
 
-    // Fallback for desktop mouse — only fires if pointerup didn't already handle it
+    // Safety nets: if the finger is lifted off the element, the browser cancels
+    // the touch, or the pointer capture is released, always end the seeking
+    // state and commit exactly once so the scrubber can never get stuck.
+    ui.seek.addEventListener("pointercancel", () => endSeek());
+    ui.seek.addEventListener("lostpointercapture", () => endSeek());
+
+    // Fallback for mouse / older WebViews that only emit a native change on release
     ui.seek.addEventListener("change", () => {
         if (!seekCommitted) {
             seekCommitted = true;
-            commitSeek(ui);
+            setSeekingState(false);
+            ui.console.classList.remove("seeking");
+            try { commitSeek(ui); } catch {}
         }
     });
 
@@ -651,7 +669,6 @@ import {
         const target = event.target;
         if (event.code === "Space" &&
             !["INPUT", "TEXTAREA", "SELECT", "BUTTON"].includes(target?.tagName) &&
-            !isAiOpen() &&
             !ui.modal.classList.contains("open") &&
             !ui.moodModal.classList.contains("open") &&
             !ui.infoModal.classList.contains("open") &&

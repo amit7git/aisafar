@@ -15,7 +15,6 @@ Radio Safar is a nostalgic highway radio experience — a cinematic, full-screen
 - **Optional full playlist pagination** — when a YouTube Data API v3 key is configured, playlists larger than 200 videos load completely (the IFrame player API itself caps at ~200).
 - **Profile/info card** — premium glass "i" card with creator details, features, song requests, and disclaimer.
 - **Live listener presence** — a Supabase-powered counter of travellers currently on the road.
-- **AI Safar companion** — optional in-app AI co-host that can switch Safars via voice-command-style messages; its cost-control & abuse protections are documented in `docs/AI-SAFAR-PROTECTIONS.md`.
 
 ## Tech Stack
 
@@ -50,12 +49,8 @@ All keys are **optional** — the app runs without any configuration.
 | Variable | Required | Purpose | Scope |
 | --- | --- | --- | --- |
 | `VITE_YOUTUBE_API_KEY` | No | YouTube Data API v3 key. Enables full pagination so playlists over 200 videos load completely. When omitted, playlists load through the player's built-in path (existing behavior, ~200-video cap). | **Public / client-side** (baked into the bundle) |
-| `GEMINI_API_KEY` | No | Server-only Gemini API key for AI Safar (`POST /api/ai-safar`). Read from `process.env` in the serverless function only. Never prefix with `VITE_`. When omitted, AI Safar degrades gracefully with a friendly message. | **Secret / server-side** |
-| `GEMINI_MODEL` | No | Optional override of the Gemini model (default `gemini-3.6-flash`). | **Secret / server-side** |
 
 > For `VITE_YOUTUBE_API_KEY`: create a key at [Google Cloud Console → APIs & Services → Credentials](https://console.cloud.google.com/apis/credentials), enable the **YouTube Data API v3**, and add the key to your Vercel environment.
->
-> For `GEMINI_API_KEY`: create a key at [Google AI Studio → Get API key](https://aistudio.google.com/apikey), then add it to your Vercel project as an **Encrypted (secret)** environment variable.
 
 Copy `.env.example` to `.env.local` locally if you want to test with keys:
 
@@ -73,19 +68,16 @@ The project deploys to [https://radiosafar.vercel.app](https://radiosafar.vercel
 - **Build command:** `npm run build`
 - **Output directory:** `dist` (relative to the project root)
 - **Node version:** ≥ 18 (Vercel's default runtime qualifies)
-- **Serverless function:** `api/ai-safar.js` is detected automatically as a Node function. It has no runtime dependencies (uses the global `fetch`) and imports only DOM-free config files.
 
 There is no `vercel.json` and no server-side routing, so nothing else is needed. Connect the GitHub repository in the Vercel dashboard (Import Project / Git integration) — fresh pushes trigger automatic deployments.
 
-**Required env setup in the Vercel project dashboard** (both optional, but needed for full functionality):
+**Required env setup in the Vercel project dashboard** (optional, but needed for full functionality):
 
 | Variable | Set as | Applied to |
 | --- | --- | --- |
 | `VITE_YOUTUBE_API_KEY` | Plain (public) | Production, Preview, Development |
-| `GEMINI_API_KEY` | **Encrypted (secret)** | Production, Preview |
-| `GEMINI_MODEL` (optional) | Encrypted (secret) | Production, Preview |
 
-`VITE_YOUTUBE_API_KEY` must **not** be encrypted — Vite expects it at build time to inline it into the client bundle. `GEMINI_API_KEY` must be secret-only: it is read by the serverless function from `process.env` at runtime and is never inlined into the bundle.
+`VITE_YOUTUBE_API_KEY` must **not** be encrypted — Vite expects it at build time to inline it into the client bundle.
 
 ## Project Structure
 

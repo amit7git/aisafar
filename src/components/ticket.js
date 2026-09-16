@@ -6,7 +6,7 @@
  *
  * Everything is fictional and stays 100% client-side:
  *   - no payment, no real booking, no seats, no database, no server calls
- *   - passenger details are never sent to Gemini, Supabase or any backend
+ *   - passenger details are never sent to any backend
  *   - the ticket lives in browser memory only and disappears on refresh
  *
  * The PDF download is built locally with zero dependencies: the ticket is

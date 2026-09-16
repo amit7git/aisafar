@@ -81,7 +81,7 @@ export function updateProgress(ui) {
     const current = player.getCurrentTime() || 0;
     ui.seek.max = String(Math.floor(duration));
     ui.total.textContent = formatTime(duration);
-    if (pendingSeek !== null) {
+    if (pendingSeek !== null && !isSeeking) {
         ui.seek.value = String(pendingSeek);
         ui.current.textContent = formatTime(pendingSeek);
         if (Math.abs(current - pendingSeek) < 1.5 || Date.now() - pendingSeekAt > 5000) {
@@ -218,12 +218,15 @@ export function syncPlaylistFromPlayer(ui, onSyncDone) {
 
 export function commitSeek(ui) {
     if (!ready) return;
-    // Guard: ignore if a seek is already pending
-    if (pendingSeek !== null) return;
+    // Rapid successive seeks are allowed: a newer gesture always supersedes any
+    // still-settling previous seek (main.js deduplicates pointerup/change pairs,
+    // so each user gesture commits exactly once here).
     pendingSeek = Number(ui.seek.value);
     pendingSeekAt = Date.now();
     isSeeking = false;
-    player.seekTo(pendingSeek, true);
+    try {
+        player.seekTo(pendingSeek, true);
+    } catch {}
 }
 
 export function randomTrack(onPlay) {
