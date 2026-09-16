@@ -1,6 +1,6 @@
 # Radio Safar V3.3
 
-**Every mood has a journey.**
+**Every mood has a journey!**
 
 Radio Safar is a nostalgic highway radio experience — a cinematic, full-screen Indian radio that streams mood-based YouTube playlists through a premium glass player. Built for night drives, deep focus, and chill moments.
 
