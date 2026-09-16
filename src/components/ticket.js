@@ -1,8 +1,8 @@
 /**
  * Mitthu Travels — Radio Safar PERSONALIZED journey e-ticket.
  *
- * Two-stage flow: (1) "Board Your Radio Safar" form → (2) generated ticket
- * preview with Edit / Download (PDF) / Share actions.
+ * Two-stage flow: (1) "Radio Safar Travels Limited" booking form → (2)
+ * generated ticket preview with Edit / Download (PDF) / Share actions.
  *
  * Everything is fictional and stays 100% client-side:
  *   - no payment, no real booking, no seats, no database, no server calls
@@ -23,7 +23,6 @@ import {
     ROUTE_PAIRS,
     PLATFORMS,
     SEATS,
-    DEPARTURE_TIMES,
     randomOf,
     nhForPair
 } from '../config/ticket-data.js';
@@ -145,6 +144,30 @@ function isValidCalendar(iso) {
     return dt.getFullYear() === y && dt.getMonth() === m - 1 && dt.getDate() === d;
 }
 
+/* ===== TIME HELPERS (24h "HH:MM", from <input type="time">) ===== */
+
+const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+function isValidTime(value) {
+    return TIME_RE.test(value);
+}
+
+function timeToMinutes(value) {
+    const [h, m] = value.split(":").map(Number);
+    return h * 60 + m;
+}
+
+function addMinutesToTime(value, minutes) {
+    if (!isValidTime(value)) return "";
+    const total = ((timeToMinutes(value) + minutes) % 1440 + 1440) % 1440;
+    return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
+}
+
+/* Ticket display label, matching the original DEPARTURE_TIMES formatting. */
+function formatTimeLabel(value) {
+    return isValidTime(value) ? `${value} Hrs.` : "";
+}
+
 function validateInputs(v) {
     const errors = {};
 
@@ -208,15 +231,17 @@ function validateInputs(v) {
 
 function showErrors(ui, errors) {
     const fields = [
-        ["name", ui.errName, "name"],
-        ["age", ui.errAge, "age"],
-        ["date", ui.errDate, "journeyDate"],
-        ["gender", ui.errGender, "gender"],
-        ["type", ui.errType, "passengerType"],
-        ["start", ui.errStart, "startCity"],
-        ["dest", ui.errDest, "destCity"]
+        ["name", "name"],
+        ["age", "age"],
+        ["date", "journeyDate"],
+        ["gender", "gender"],
+        ["type", "passengerType"],
+        ["start", "startCity"],
+        ["dest", "destCity"]
     ];
-    fields.forEach(([key, errEl, ctrlName]) => {
+    fields.forEach(([key, ctrlName]) => {
+        const errId = "err" + key.charAt(0).toUpperCase() + key.slice(1);
+        const errEl = ui[key] || document.getElementById(errId);
         if (errEl) errEl.textContent = errors[key] || "";
         const ctrl = ui.ticketForm.elements.namedItem(ctrlName);
         const field = ctrl && ctrl.closest ? ctrl.closest(".tf-field") : null;
@@ -271,6 +296,12 @@ function buildJourney(v, snap) {
     const route = pickRoute(v.start, v.dest);
     const now = new Date();
 
+    /* Reporting time is taken from the current local journey-generation time;
+       departure is always exactly 15 minutes later (military-time helpers handle
+       the midnight rollover). No user input — the values are never entered. */
+    const reportingTime = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+    const departureTime = addMinutesToTime(reportingTime, 15);
+
     const pnr = "RS" + Math.floor(10000000 + Math.random() * 90000000);
     const txn = "RS" + Array.from({ length: 8 }, () => TXN_CHARS[Math.floor(Math.random() * TXN_CHARS.length)]).join("");
     const ticketId = `RS-${String(now.getFullYear()).slice(2)}${pad(now.getMonth() + 1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}`;
@@ -294,13 +325,13 @@ function buildJourney(v, snap) {
         start: route.start,
         dest: route.dest,
         nh: route.nh,
-        departure: randomOf(DEPARTURE_TIMES),
+        departure: formatTimeLabel(departureTime),
         bay,
         seat: randomOf(SEATS),
         busType: "Volvo 9600 Multi-Axle A/C Sleeper (Imaginary Edition)",
         regNo: "RJ-27-NO-BUS-404",
         boardingBay: `Bay ${bay} (Platform exists only when eyes are closed)`,
-        reportingTime: "06:30 Hrs (Passengers who arrive in reality will be disappointed)",
+        reportingTime: formatTimeLabel(reportingTime),
         captain: "Captain Mitthu (Prefers playing 90s hits over using the horn)",
         luggage: "15kg of real baggage + Unlimited emotional baggage",
         fare,
@@ -1308,4 +1339,4 @@ export function initTicket(ui) {
 
 /* Testable internals — used by the ticket QA harness to render and inspect
  * the exact JPEG + PDF produced for a given journey (not public UI API). */
-export { makeTicketLayout, renderTicketPdfCanvas, renderTicketJpegDataUrl, buildTicketPdf, buildJourney, TICKET_W, PDF_RULES, FINE_PRINT, PDF_CARRIER, PDF_EMBED_H_MAX, validateInputs, normalizeField, fareInWords, qrDataUrl, qrPayload, numberToWordsIndian };
+export { makeTicketLayout, renderTicketPdfCanvas, renderTicketJpegDataUrl, buildTicketPdf, buildJourney, TICKET_W, PDF_RULES, FINE_PRINT, PDF_CARRIER, PDF_EMBED_H_MAX, validateInputs, normalizeField, fareInWords, qrDataUrl, qrPayload, numberToWordsIndian, isValidTime, addMinutesToTime, formatTimeLabel };

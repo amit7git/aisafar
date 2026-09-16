@@ -204,6 +204,7 @@ import {
             stopProgress();
         }
         isPlayingNow = playing;
+        displayBoard.setPlaying(playing);
         refreshLedStatus(false);
     }
 

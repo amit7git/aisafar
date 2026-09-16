@@ -2023,7 +2023,7 @@ input:focus-visible {
     }
 }
 
-/* ===== RADIO SAFAR DISPLAY BOARD (top-centre compact digital journey board) ===== */
+/* ===== RADIO SAFAR DISPLAY BOARD (top-centre premium coach LED board) ===== */
 /* Pure presentation — never intercepts input except the Info button that lives
    inside it (top-right cell). Compact so it stays clear of the clock, the
    top-right Book Ticket button, the title, the player console and the chatbot.
@@ -2040,19 +2040,20 @@ input:focus-visible {
     -webkit-user-select: none;
     display: flex;
     align-items: center;
-    gap: 14px;
-    width: min(500px, calc(100vw - 430px));
+    gap: 10px;
+    width: min(430px, calc(100vw - 440px));
     box-sizing: border-box;
-    padding: 11px 16px;
-    border-radius: 14px;
-    border: 1px solid rgba(255, 190, 80, 0.3);
-    background: linear-gradient(165deg, rgba(12, 16, 22, 0.62) 0%, rgba(6, 9, 13, 0.74) 100%);
+    padding: 9px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 190, 80, 0.22);
+    background: linear-gradient(168deg, rgba(12, 14, 19, 0.88) 0%, rgba(6, 8, 12, 0.92) 100%);
     backdrop-filter: blur(12px) saturate(150%);
     -webkit-backdrop-filter: blur(12px) saturate(150%);
     box-shadow:
-        0 12px 34px rgba(0, 0, 0, 0.5),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1),
-        0 0 0 1px rgba(255, 170, 29, 0.08);
+        0 14px 34px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        inset 0 0 26px rgba(255, 170, 29, 0.05),
+        0 0 18px rgba(255, 170, 29, 0.08);
     font-family: 'Orbitron', var(--mono);
     text-align: center;
 }
@@ -2067,112 +2068,255 @@ input:focus-visible {
     }
 }
 
-/* Two-line digital text stack */
+/* Digital text stack: status / CURRENT→NEXT route / telemetry */
 .db-text {
     flex: 1;
     min-width: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2px;
+    gap: 3px;
 }
 
-.db-line {
+/* Head: the single rotating status unit. Extra bottom margin opens a clearly
+   visible but compact gap between line 1 (status) and line 2 (route), so the
+   location names read cleanly while the overall board stays compact. */
+.db-head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    max-width: 100%;
+    margin-bottom: 3px;
+}
+
+.db-head__status {
     display: block;
     max-width: 100%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: #ffe9c2;
+    font-size: clamp(11px, 1.15vw, 13px);
     font-weight: 800;
-    line-height: 1.15;
+    letter-spacing: 0.09em;
+    line-height: 1.1;
     text-transform: uppercase;
-}
-
-/* Neon amber "electronic journey display" readout */
-.db-line--1 {
-    color: #ffe4a0;
-    font-size: clamp(13px, 1.5vw, 17px);
-    letter-spacing: 0.06em;
     text-shadow:
-        0 0 8px rgba(255, 190, 80, 0.55),
-        0 0 22px rgba(255, 170, 29, 0.3);
+        0 0 12px rgba(255, 190, 80, 0.35),
+        0 0 34px rgba(255, 170, 29, 0.12);
 }
 
-.db-line--2 {
-    color: rgba(255, 224, 161, 0.72);
-    font-size: clamp(9px, 0.95vw, 11.5px);
+/* Route row: CURRENT → NEXT, cities prominent with quiet micro-labels.
+   The two stops get distinct complementary colours: CURRENT reads cool
+   (cyan), NEXT reads warm (amber) — the only two accent colours on the
+   board besides the green LIVE dot. */
+.db-navi {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    color: rgba(248, 250, 252, 0.92);
+    font-size: clamp(10px, 1.05vw, 12px);
+    letter-spacing: 0.12em;
+    line-height: 1.1;
+    white-space: nowrap;
+}
+
+.db-nav {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.db-nav--cur {
+    align-items: flex-end;
+}
+
+.db-nav--nxt {
+    align-items: flex-start;
+}
+
+.db-loc {
+    max-width: 30ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 800;
+}
+
+.db-nav--cur .db-loc {
+    color: #8be8ff;
+    text-shadow: 0 0 12px rgba(90, 210, 255, 0.28);
+}
+
+.db-nav--nxt .db-loc {
+    color: #ffd573;
+    text-shadow: 0 0 12px rgba(255, 190, 80, 0.28);
+}
+
+.db-nav-label {
+    color: rgba(255, 190, 80, 0.6);
+    font-size: 6.5px;
+    font-weight: 700;
+    letter-spacing: 0.24em;
+    line-height: 1;
+}
+
+.db-arrow {
+    color: rgba(255, 190, 80, 0.75);
+    font-size: 1.1em;
+    line-height: 1;
+    text-shadow: 0 0 10px rgba(255, 170, 29, 0.4);
+}
+
+/* Telemetry (LAST row): speed left, LIVE count right — one calm datarow. */
+.db-meta {
+    width: 100%;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    font-size: clamp(8px, 0.85vw, 9px);
+    letter-spacing: 0.1em;
+    line-height: 1.1;
+    white-space: nowrap;
+}
+
+.db-speed {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+    color: rgba(248, 250, 252, 0.92);
+}
+
+.db-speed__value {
+    color: #ffd573;
+    font-size: 1.35em;
+    font-weight: 800;
+    text-shadow: 0 0 10px rgba(255, 170, 29, 0.4);
+}
+
+.db-speed__unit {
+    color: rgba(248, 250, 252, 0.55);
+    font-size: 0.8em;
+    font-weight: 700;
     letter-spacing: 0.14em;
-    text-shadow: 0 0 8px rgba(255, 200, 100, 0.35);
+}
+
+.db-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #ffd573;
+    font-weight: 800;
+}
+
+/* LIVE indicator: a green blinking dot with the count as the only label —
+   no MUSAFIR / LISTENERS / ONLINE USERS words. Stays visible but static
+   when the visitor prefers reduced motion. */
+.db-live__dot {
+    color: #4ade80;
+    font-size: 0.9em;
+    line-height: 1;
+    text-shadow: 0 0 10px rgba(74, 222, 128, 0.85);
+}
+
+.db-live__count {
+    font-size: 1.2em;
+    letter-spacing: 0.08em;
+    color: #ffd573;
+    text-shadow: 0 0 10px rgba(255, 170, 29, 0.4);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .db-live__dot {
+        animation: dbLiveBlink 1.6s ease-in-out infinite;
+    }
+}
+
+@keyframes dbLiveBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.12; }
 }
 
 /* Compact Info button that lives inside the board (top-right). Stays
    clickable while the board itself never intercepts input. */
 .display-board .info-button {
     flex: 0 0 auto;
-    width: 30px;
-    height: 30px;
-    font-size: 1rem;
+    width: 28px;
+    height: 28px;
+    font-size: 0.95rem;
     pointer-events: auto;
     border-radius: 50%;
-    border: 1px solid rgba(255, 190, 80, 0.28);
-    background: rgba(24, 18, 10, 0.6);
+    border: 1px solid rgba(255, 190, 80, 0.3);
+    background: rgba(18, 16, 9, 0.72);
     color: var(--accent-light);
     font-family: Georgia, serif;
     font-weight: 700;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.18);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.12), 0 3px 10px rgba(0, 0, 0, 0.4);
     transition: border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.18s ease;
 }
 
 .display-board .info-button:hover {
     border-color: var(--accent);
     color: #fff;
-    box-shadow: 0 0 14px var(--accent-glow), 0 4px 14px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 14px var(--accent-glow), 0 3px 12px rgba(0, 0, 0, 0.45);
 }
 
 .display-board .info-button:active {
     transform: scale(0.92);
 }
 
-/* Hidden numeric source of the live listener count (existing presence callback) */
-.db-online {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    clip-path: inset(50%);
-    white-space: nowrap;
-}
-
-/* ---- Mobile: compact two-line readout below the header, clear of the
+/* ---- Mobile: compact readout below the header, clear of the
    clock / Rain control / Book Ticket / title ---- */
 @media (max-width: 650px) {
     .display-board {
-        top: calc(env(safe-area-inset-top) + 90px);
-        width: min(430px, 92vw);
-        gap: 10px;
-        padding: 3px 12px;
-        border-radius: 12px;
+        top: calc(env(safe-area-inset-top) + 86px);
+        width: min(360px, 92vw);
+        gap: 5px;
+        padding: 2px 10px;
+        border-radius: 10px;
     }
 
     .db-text {
         gap: 1px;
     }
 
-    .db-line--1 {
-        font-size: 10.5px;
+    .db-head {
+        gap: 0;
+        margin-bottom: 2px;
+    }
+
+    .db-head__status {
+        font-size: 8.5px;
         letter-spacing: 0.05em;
     }
 
-    .db-line--2 {
-        font-size: 8.6px;
-        letter-spacing: 0.1em;
+    .db-navi {
+        font-size: 8px;
+        gap: 8px;
+        letter-spacing: 0.08em;
+    }
+
+    .db-nav {
+        gap: 1px;
+    }
+
+    .db-nav-label {
+        display: none;
+    }
+
+    .db-meta {
+        font-size: 6.5px;
+        letter-spacing: 0.05em;
+        padding-top: 0;
     }
 
     .display-board .info-button {
-        width: 30px;
-        height: 30px;
-        font-size: 1rem;
+        width: 22px;
+        height: 22px;
+        font-size: 0.8rem;
     }
 }
 
@@ -2180,53 +2324,93 @@ input:focus-visible {
    the title logo below (and the top-right Book Ticket on the sides) ---- */
 @media (min-width: 651px) and (max-height: 920px) {
     .display-board {
-        width: min(460px, calc(100vw - 430px));
-        padding: 7px 14px;
-        border-radius: 12px;
+        width: min(430px, calc(100vw - 430px));
+        padding: 8px 14px;
+        border-radius: 11px;
     }
 
-    .db-line--1 {
+    .db-head__status {
         font-size: 13px;
     }
 
-    .db-line--2 {
-        font-size: 9.5px;
+    .db-navi {
+        font-size: 12px;
+    }
+
+    .db-meta {
+        font-size: 9px;
     }
 }
 
 @media (min-width: 651px) and (max-height: 720px) {
     .display-board {
-        padding: 5px 12px;
+        padding: 6px 12px;
     }
 
-    .db-line--1 {
+    .db-head__status {
         font-size: 12px;
     }
 
-    .db-line--2 {
+    .db-navi {
+        font-size: 11px;
+    }
+
+    .db-meta {
         font-size: 8.5px;
     }
 }
 
-/* Mobile + short screen safety: keep the two-line readout above the title */
+/* Mobile + short screen safety: keep the readout above the title */
 @media (max-width: 650px) and (max-height: 720px) {
     .display-board {
-        top: calc(env(safe-area-inset-top) + 86px);
-        padding: 4px 10px;
+        top: calc(env(safe-area-inset-top) + 82px);
+        padding: 2px 9px;
+        gap: 5px;
+        border-radius: 9px;
     }
 
-    .db-line--1 {
-        font-size: 10px;
+    .db-head__status {
+        font-size: 7.5px;
     }
 
-    .db-line--2 {
-        font-size: 8px;
+    .db-navi {
+        font-size: 7.5px;
+        gap: 7px;
+    }
+
+    .db-meta {
+        font-size: 6.5px;
     }
 }
 
 /* Reduced motion: the display only swaps text — no motion to suppress; the
    global prefers-reduced-motion rule already zeroes CSS animation/transition
    durations. */
+
+/* ===== FOOTER CREDIT — below the music player, at the very bottom ===== */
+/* Sits in the safe strip beneath the player console (the player anchors to
+   the bottom with breathing room), centred and muted so it never competes
+   with the UI, the rain button or the board. */
+.site-footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 4px;
+    z-index: 4;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    line-height: 1.2;
+    color: rgba(248, 250, 252, 0.42);
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 /* ===== RAIN MODE — lightweight windshield/monsoon overlay ===== */
 .rain-btn {
@@ -2397,30 +2581,60 @@ input:focus-visible {
 }
 
 .tf-head {
-    padding: 10px 6px 6px;
-    text-align: left;
+    padding: 8px 6px 10px;
+    text-align: center;
+}
+
+.tf-brand {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.tf-logo {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 190, 80, 0.5);
+    box-shadow:
+        0 0 0 3px rgba(255, 170, 29, 0.12),
+        0 8px 26px rgba(0, 0, 0, 0.5),
+        0 0 22px rgba(255, 170, 29, 0.18);
+    background: #0b0d10;
 }
 
 .tf-kicker {
     font-family: 'Orbitron', var(--mono);
     font-size: 9px;
     font-weight: 800;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.24em;
     color: var(--accent-light);
 }
 
 .tf-title {
-    margin: 6px 0 0;
+    margin: 5px 0 0;
     font-family: 'Rozha One', var(--hindi);
     font-weight: 400;
     font-size: clamp(22px, 4.6vw, 28px);
+    line-height: 1.12;
     color: #ffe5ad;
+    text-shadow: 0 0 24px rgba(255, 170, 29, 0.22);
+}
+
+.tf-subtitle {
+    margin: 4px 0 0;
+    font-family: 'Orbitron', var(--mono);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #ffd573;
 }
 
 .tf-desc {
-    margin: 6px 0 0;
+    margin: 8px 0 0;
     font-size: 12.5px;
-    line-height: 1.45;
+    line-height: 1.5;
     color: rgba(255, 255, 255, 0.78);
 }
 

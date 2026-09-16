@@ -1,120 +1,203 @@
-/* Radio Safar — Display Board (top-centre compact journey board)
+/* Radio Safar — Display Board (top-centre premium coach LED board)
+ *   Restyled to read like a luxury intercity bus / airport LED information
+ *   panel. One rotating main status line; a clean CURRENT → NEXT route row
+ *   (CURRENT in cool cyan, NEXT in warm amber); and a bottom telemetry
+ *   row (speed left, live listener count right). No player status was kept.
  *
- * A lightweight, presentation-only digital journey display. It shows a
- * simulated highway/radio display with:
- *   - a rotating slate of NEON digital messages (welcome, music, ticket,
- *     radio-safar announcements)
- *   - simulated journey telemetry: speed + current/next city (SIMULATED —
- *     not real GPS; the site has no geolocation source and this never claims
- *     to be one)
- *   - live listener count (single source: the existing Supabase presence
- *     callback, fed in by main.js — this module never opens its own channel)
+ *   - A main rotating line: calm JOURNEY / MUSIC / TICKET messages at a calm
+ *     ~8s cadence (welcome shows first for ~8s).
+ *   - A persistent route row: CURRENT → NEXT. The SIMULATED journey is picked
+ *     at random ONCE per session and loops on the same route (the site has no
+ *     geolocation source; this never claims to be real GPS).
+ *   - Telemetry (LAST row, always visible): simulated speed (left) + green
+ *     blinking LIVE listener count (right). The count is the single existing
+ *     Supabase presence value fed in by main.js via setOnline — this module
+ *     never opens its own channel. The LIVE dot is the board's only animated
+ *     accent.
  *
- * Sequence:
- *   1. WELCOME (WELCOME TO RADIO SAFAR / AMIT) — shown once on load, held
- *      ~8s so it is noticed, then the journey/music rotation begins.
- *   2. Journey/telemetry and short announcements alternate calmly (~8s each).
- * City pairs advance only every ~2.5–3 minutes with jitter; speed can change
- * more often (every ~2.4s). Timers are cheap and pause while the document is
- * hidden. No requestAnimationFrame; reduced-motion is handled in CSS.
+ *   Speed is tied to whether the music is actually playing: main.js feeds
+ *   PLAYING / NOT PLAYING via setPlaying. While music plays, the speed does a
+ *   smooth random walk 62–84 km/h; the moment playback stops (paused, ended,
+ *   or never started) the speed reads 0 KM/H — no stale number on screen.
+ *
+ *   One route is chosen randomly on page load and the journey stays on it
+ *   for the whole session, looping back to the start of the same route when
+ *   it ends (no random mid-session jumps, no route switching).
+ *
+ *   City pairs advance only every ~2–3 minutes (120–180s with jitter). Speeds
+ *   can change more often (every ~2.4s) but only while playing. Timers are
+ *   cheap and pause while the document is hidden. No requestAnimationFrame;
+ *   reduced-motion is handled by the global CSS rule.
  */
 
-const ROUTE = [
-    { from: "BENGALURU", to: "TUMAKURU" },
-    { from: "TUMAKURU", to: "CHITRADURGA" },
-    { from: "CHITRADURGA", to: "DAVANAGERE" },
-    { from: "DAVANAGERE", to: "HUBBALLI" },
-    { from: "HUBBALLI", to: "DHARWAD" },
-    { from: "DHARWAD", to: "BELAGAVI" },
-    { from: "BELAGAVI", to: "BENGALURU" }
+const ROUTES = [
+    { name: "KARNATAKA", cities: ["BENGALURU", "TUMAKURU", "CHITRADURGA", "DAVANAGERE", "HUBBALLI", "DHARWAD", "BELAGAVI"] },
+    { name: "KARNATAKA SOUTH", cities: ["BENGALURU", "RAMANAGARA", "MANDYA", "MYSURU"] },
+    { name: "KARNATAKA COAST", cities: ["MANGALURU", "UDUPI", "KUNDAPURA", "BHATKAL", "KARWAR"] },
+    { name: "KARNATAKA → GOA", cities: ["BELAGAVI", "KHANAPUR", "GOA"] },
+    { name: "KARNATAKA → TELANGANA", cities: ["BENGALURU", "ANANTAPUR", "KURNOOL", "HYDERABAD"] },
+    { name: "MAHARASHTRA", cities: ["MUMBAI", "THANE", "NASHIK", "DHULE", "AURANGABAD"] },
+    { name: "NORTH INDIA", cities: ["DELHI", "MATHURA", "AGRA", "GWALIOR", "JHANSI"] },
+    { name: "WEST INDIA", cities: ["AHMEDABAD", "VADODARA", "SURAT", "VAPI", "MUMBAI"] },
+    { name: "EAST INDIA", cities: ["KOLKATA", "DURGAPUR", "ASANSOL", "DHANBAD", "RANCHI"] },
+    { name: "TAMIL NADU", cities: ["CHENNAI", "PONDICHERRY", "VILLUPURAM", "TRICHY", "MADURAI"] },
+    { name: "KERALA", cities: ["KOCHI", "ALAPPUZHA", "KOLLAM", "THIRUVANANTHAPURAM"] },
+    { name: "ANDHRA / TELANGANA", cities: ["HYDERABAD", "VIJAYAWADA", "GUNTUR", "NELLORE", "CHENNAI"] }
 ];
 
 const SPEED_MIN = 62;
 const SPEED_MAX = 84;
 const SPEED_TICK_MS = 2400;
 
-/* Announcement pools (drawn in rotation). " • "/" — " split a message onto
-   the board's two lines; single-line messages keep the route on line 2. */
-const MUSIC_MESSAGES = [
-    "YOUR MUSICAL JOURNEY STARTS HERE",
-    "ENJOY THE RIDE • ENJOY THE MUSIC",
+/* Safar Mile / Journey Status library — calm roadside notes that rotate
+   naturally in the main line. They never replace telemetry or the route. */
+const SAFAR_MILE_MESSAGES = [
+    "ENJOY THE OPEN ROAD",
     "MUSIC FOR EVERY MILE",
-    "TUNE IN • SIT BACK • ENJOY",
+    "RADIO SAFAR LIVE",
+    "KEEP YOUR TICKET READY",
+    "NEXT STOP APPROACHING",
+    "ENJOY THE JOURNEY",
+    "EVERY ROAD HAS A STORY",
+    "KEEP LISTENING",
+    "RADIO ON • JOURNEY ON",
+    "TRAVEL • LISTEN • REPEAT",
+    "HAPPY SAFAR • MUSAFIR",
+    "RADIO SAFAR • LIVE ON AIR"
+];
+
+const WELCOME_MESSAGES = [
+    "WELCOME TO RADIO SAFAR",
+    "YOUR JOURNEY STARTS HERE",
+    "MUSICAL JOURNEY STARTS"
+];
+
+const MUSIC_MESSAGES = [
+    "MUSIC ON THE MOVE",
+    "MUSIC FOR EVERY MILE",
+    "TUNE IN • SIT BACK",
     "YOUR JOURNEY • YOUR MUSIC",
     "TRAVEL • MUSIC • MEMORIES",
-    "ENJOY YOUR SAFAR 🎵",
-    "LIVE ON THE ROAD • LIVE WITH MUSIC",
-    "DISCOVER YOUR NEXT MUSICAL MILE",
-    "NOW PLAYING • RADIO SAFAR",
-    "KEEP YOUR SEAT • KEEP THE MUSIC ON"
+    "ENJOY YOUR SAFAR",
+    "LIVE ON THE ROAD",
+    "MUSIC ON • WORRIES OFF",
+    "RIDE • LISTEN • REPEAT",
+    "THE ROAD IS LONG"
 ];
 
-const TICKET_MESSAGE = "PLEASE BOOK YOUR TICKET 🎫";
+const JOURNEY_MESSAGES = [
+    "JOURNEY IN PROGRESS",
+    "SIT BACK • RELAX",
+    "EVERY ROAD HAS A STORY",
+    "TRAVEL FAR • LISTEN MORE",
+    "ENJOY THE RIDE",
+    "ONE JOURNEY • MANY MOODS",
+    "KEEP MOVING • LISTEN ON",
+    "EN ROUTE"
+];
 
 const RADIO_MESSAGES = [
-    "RADIO SAFAR • EVERY MOOD HAS A JOURNEY",
-    "EVERY MOOD HAS A JOURNEY"
+    "RADIO SAFAR LIVE",
+    "RADIO ON • JOURNEY ON",
+    "GOOD VIBES ON AIR"
 ];
 
-/* Journey returns every other slot so speed + position stay prominent. */
-const MODES = ["journey", "music", "journey", "ticket", "journey", "radio"];
+const MUSAFIR_MESSAGES = [
+    "MUSAFIR MODE • ON",
+    "YOUR SAFAR • YOUR MUSIC",
+    "ENJOY THE RIDE",
+    "STAY TUNED",
+    "MUSAFIR ABOARD",
+    "ALL WELCOME • STAY TUNED"
+];
+
+const TICKET_MESSAGES = [
+    "BOOK YOUR TICKET",
+    "YOUR SEAT IS WAITING",
+    "THANK YOU • RADIO SAFAR"
+];
+
+const PLAYING_MESSAGES = [
+    "YOUR SAFAR SETLIST IS ON",
+    "TUNED TO YOUR PLAYLIST",
+    "A SAFAR FOR EVERY MOOD"
+];
+
+const MOOD_MESSAGES = [
+    "EVERY MOOD HAS A JOURNEY",
+    "PLAY YOUR MOOD",
+    "FIND YOUR VIBE",
+    "DISCOVER NEW SOUNDS",
+    "A NEW CITY • A NEW MOOD"
+];
+
+const SAFAR_MESSAGES = [
+    "STAY TUNED",
+    "NEXT STOP • NEW MEMORIES",
+    "FROM ROAD TO PLAYLIST",
+    "PRESS PLAY • START SAFAR",
+    "YOUR DIGITAL JOURNEY"
+];
+
+/* Calm rotation of pure journey/mood/music notes — no player state flows
+   onto the board anymore. Telemetry stays in its own always-visible last row. */
+const MODES = ["music", "journey", "safar-mile", "ticket", "music", "radio", "journey", "safar-mile", "musafir", "music", "playing", "journey", "safar-mile", "music", "mood", "safar", "journey", "music"];
 
 const WELCOME_MS = 8000;
 const MODE_MS = 8000;
-const CITY_MS_MIN = 150000; /* ~2.5 min */
-const CITY_MS_MAX = 180000; /* ~3 min */
+const CITY_MS_MIN = 120000;
+const CITY_MS_MAX = 180000;
 
 export function initDisplayBoard() {
     const board = document.getElementById("displayBoard");
-    const line1 = document.getElementById("dbLine1");
-    const line2 = document.getElementById("dbLine2");
+    const statusEl = document.getElementById("dbLine1");
     const onlineEl = document.getElementById("dbOnline");
+    const speedEl = document.getElementById("dbSpeed");
+    const cityCur = document.getElementById("dbCityCur");
+    const cityNext = document.getElementById("dbCityNext");
 
-    if (!board || !line1 || !line2 || !onlineEl) {
-        return { setOnline() {} };
+    if (!board || !statusEl || !onlineEl || !speedEl || !cityCur || !cityNext) {
+        return { setOnline() {}, setPlaying() {} };
     }
 
-    let onlineCount = parseInt(onlineEl.textContent, 10) || 0;
-    let routeIndex = 0;
+    const routeIdx = Math.floor(Math.random() * ROUTES.length);
+    let cityIndex = 0;
     let speed = 68 + Math.floor(Math.random() * 8);
+    let onlineCount = parseInt(onlineEl.textContent, 10) || 0;
     let modeIndex = 0;
+    let welcomeIndex = 0;
     let musicIndex = 0;
+    let journeyIndex = 0;
     let radioIndex = 0;
-    let currentMode = "welcome";
+    let musafirIndex = 0;
+    let ticketIndex = 0;
+    let playingIndex = 0;
+    let moodIndex = 0;
+    let safarIndex = 0;
+    let safarMileIndex = 0;
     let welcomeDone = false;
     let running = true;
+    let musicOn = false;
     let welcomeTimer = null;
     let speedTimer = null;
     let modeTimer = null;
     let cityTimer = null;
 
-    function renderJourney() {
-        currentMode = "journey";
-        const leg = ROUTE[routeIndex % ROUTE.length];
-        line1.textContent = leg.from + " → " + leg.to;
-        line2.textContent =
-            String(speed).padStart(2, "0") + " KM/H  •  ● LIVE " + onlineCount;
+    const route = () => ROUTES[routeIdx];
+
+    function renderRoute() {
+        const cities = route().cities;
+        cityCur.textContent = cities[cityIndex];
+        cityNext.textContent = cities[(cityIndex + 1) % cities.length];
     }
 
-    function splitMessage(text) {
-        const sepIdx = text.indexOf(" • ");
-        const globalIdx = sepIdx === -1 ? text.indexOf(" — ") : -1;
-        const idx = sepIdx !== -1 ? sepIdx : globalIdx;
-        if (idx !== -1) {
-            return [text.slice(0, idx), text.slice(idx + 3)];
-        }
-        return [text, ""];
+    function renderTelemetry() {
+        speedEl.textContent = musicOn ? String(speed) : "0";
+        onlineEl.textContent = `${String(onlineCount)} Online`;
     }
 
     function renderMessage(text) {
-        currentMode = "message";
-        const parts = splitMessage(text);
-        line1.textContent = parts[0];
-        line2.textContent = parts[1];
-        if (!parts[1]) {
-            const leg = ROUTE[routeIndex % ROUTE.length];
-            line2.textContent = leg.from + " → " + leg.to;
-        }
+        statusEl.textContent = text;
     }
 
     function renderMode() {
@@ -122,25 +205,51 @@ export function initDisplayBoard() {
         const mode = MODES[modeIndex % MODES.length];
         modeIndex += 1;
         switch (mode) {
-            case "journey":
-                renderJourney();
-                break;
-            case "music":
-                renderMessage(MUSIC_MESSAGES[musicIndex % MUSIC_MESSAGES.length]);
-                musicIndex += 1;
-                break;
-            case "ticket":
-                renderMessage(TICKET_MESSAGE);
-                break;
-            case "radio":
-                renderMessage(RADIO_MESSAGES[radioIndex % RADIO_MESSAGES.length]);
-                radioIndex += 1;
-                break;
+        case "safar-mile":
+            renderMessage(SAFAR_MILE_MESSAGES[safarMileIndex % SAFAR_MILE_MESSAGES.length]);
+            safarMileIndex += 1;
+            break;
+        case "welcome":
+            renderMessage(WELCOME_MESSAGES[welcomeIndex % WELCOME_MESSAGES.length]);
+            welcomeIndex += 1;
+            break;
+        case "ticket":
+            renderMessage(TICKET_MESSAGES[ticketIndex % TICKET_MESSAGES.length]);
+            ticketIndex += 1;
+            break;
+        case "radio":
+            renderMessage(RADIO_MESSAGES[radioIndex % RADIO_MESSAGES.length]);
+            radioIndex += 1;
+            break;
+        case "musafir":
+            renderMessage(MUSAFIR_MESSAGES[musafirIndex % MUSAFIR_MESSAGES.length]);
+            musafirIndex += 1;
+            break;
+        case "playing":
+            renderMessage(PLAYING_MESSAGES[playingIndex % PLAYING_MESSAGES.length]);
+            playingIndex += 1;
+            break;
+        case "journey":
+            renderMessage(JOURNEY_MESSAGES[journeyIndex % JOURNEY_MESSAGES.length]);
+            journeyIndex += 1;
+            break;
+        case "mood":
+            renderMessage(MOOD_MESSAGES[moodIndex % MOOD_MESSAGES.length]);
+            moodIndex += 1;
+            break;
+        case "safar":
+            renderMessage(SAFAR_MESSAGES[safarIndex % SAFAR_MESSAGES.length]);
+            safarIndex += 1;
+            break;
+        case "music":
+        default:
+            renderMessage(MUSIC_MESSAGES[musicIndex % MUSIC_MESSAGES.length]);
+            musicIndex += 1;
+            break;
         }
         modeTimer = setTimeout(renderMode, MODE_MS);
     }
 
-    /* Smooth random-walk speed — an easy, believable cruise, never abrupt. */
     function stepSpeed() {
         const roll = Math.random();
         let step = 0;
@@ -152,6 +261,7 @@ export function initDisplayBoard() {
             step = (Math.random() < 0.5 ? -1 : 1) * 2;
         }
         speed = Math.min(SPEED_MAX, Math.max(SPEED_MIN, speed + step));
+        renderTelemetry();
     }
 
     function cityDelay() {
@@ -159,11 +269,12 @@ export function initDisplayBoard() {
     }
 
     function advanceCity() {
-        routeIndex = (routeIndex + 1) % ROUTE.length;
+        const cities = route().cities;
+        cityIndex = (cityIndex + 1) % cities.length;
+        renderRoute();
         cityTimer = setTimeout(advanceCity, cityDelay());
     }
 
-    /* The welcome frame is paused on every resume until its WELCOME_MS is up */
     function stopTimers() {
         clearTimeout(welcomeTimer);
         clearInterval(speedTimer);
@@ -174,13 +285,16 @@ export function initDisplayBoard() {
 
     function startTimers() {
         stopTimers();
-        speedTimer = setInterval(stepSpeed, SPEED_TICK_MS);
+        if (musicOn) {
+            speedTimer = setInterval(stepSpeed, SPEED_TICK_MS);
+        }
         cityTimer = setTimeout(advanceCity, cityDelay());
+        renderRoute();
+        renderTelemetry();
 
         if (!welcomeDone) {
             welcomeDone = true;
-            line1.textContent = "WELCOME TO RADIO SAFAR";
-            line2.textContent = "AMIT";
+            statusEl.textContent = "WELCOME TO RADIO SAFAR";
             welcomeTimer = setTimeout(() => {
                 welcomeTimer = null;
                 modeIndex = 0;
@@ -216,12 +330,24 @@ export function initDisplayBoard() {
     startTimers();
 
     return {
-        /* Mirrors the single existing presence counter (main.js owns the real
-           Supabase channel); this only writes the digits on the board. */
+        /* Single live value the board renders: the existing Supabase presence
+           count passed in by main.js. This module never opens its own channel. */
         setOnline(count) {
             onlineCount = count;
-            onlineEl.textContent = String(count);
-            if (currentMode === "journey") renderJourney();
+            renderTelemetry();
+        },
+
+        /* PLAYING / NOT PLAYING feed from main.js. The speed walk only runs
+           while music is actually playing; otherwise the board reads 0 KM/H. */
+        setPlaying(playing) {
+            musicOn = playing === true;
+            if (musicOn && running && !speedTimer) {
+                speedTimer = setInterval(stepSpeed, SPEED_TICK_MS);
+            } else if (!musicOn) {
+                clearInterval(speedTimer);
+                speedTimer = null;
+            }
+            renderTelemetry();
         }
     };
 }

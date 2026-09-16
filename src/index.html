@@ -197,12 +197,27 @@
         </div>
     </header>
 
-    <!-- ===== RADIO SAFAR DISPLAY BOARD (top-centre compact journey board) ===== -->
+    <!-- ===== RADIO SAFAR DISPLAY BOARD (top-centre premium coach LED board) ===== -->
     <section class="display-board" id="displayBoard" aria-label="Radio Safar journey board">
-        <span class="db-online" id="dbOnline" hidden>555</span>
         <div class="db-text">
-            <span class="db-line db-line--1" id="dbLine1">WELCOME TO RADIO SAFAR</span>
-            <span class="db-line db-line--2" id="dbLine2">AMIT</span>
+            <span class="db-head" id="dbHead">
+                <span class="db-head__status" id="dbLine1">WELCOME TO RADIO SAFAR</span>
+            </span>
+            <span class="db-navi" id="dbNavi" aria-live="off">
+                <span class="db-nav db-nav--cur">
+                    <span class="db-loc" id="dbCityCur">BENGALURU</span>
+                    <span class="db-nav-label">CURRENT</span>
+                </span>
+                <span class="db-arrow" aria-hidden="true">→</span>
+                <span class="db-nav db-nav--nxt">
+                    <span class="db-loc" id="dbCityNext">TUMAKURU</span>
+                    <span class="db-nav-label">NEXT</span>
+                </span>
+            </span>
+            <span class="db-meta" id="dbMeta" aria-live="off">
+                <span class="db-speed"><span class="db-speed__value" id="dbSpeed">68</span><span class="db-speed__unit">KM/H</span></span>
+                <span class="db-live"><span class="db-live__dot" aria-hidden="true">●</span><span class="db-live__count" id="dbOnline">555 Online</span></span>
+            </span>
         </div>
         <button class="info-button" id="infoBtn" type="button" aria-label="Information" title="Information">i</button>
     </section>
@@ -327,6 +342,9 @@
         </section>
     </main>
 
+    <!-- ===== FOOTER CREDIT — below the music player ===== -->
+    <footer class="site-footer" aria-label="Site footer">Created with ❤️ by Amit Sahani</footer>
+
     <!-- ===== PLAYLIST MODAL ===== -->
     <div class="modal" id="playlistModal" role="dialog" aria-modal="true" aria-labelledby="playlistHeading" aria-hidden="true">
         <div class="panel">
@@ -432,9 +450,13 @@
             <!-- STAGE 1 — Board Your Radio Safar -->
             <div class="ticket-stage" id="ticketFormStage">
                 <div class="tf-head">
-                    <div class="tf-kicker">RADIO SAFAR TRAVELS LIMITED</div>
-                    <h2 class="tf-title" id="ticketHeading">Board Your Radio Safar</h2>
-                    <p class="tf-desc">Enter a few details and we'll create your Radio Safar Travels journey ticket.</p>
+                    <div class="tf-brand">
+                        <img class="tf-logo" src="/radio-safar-icon-1024.png" alt="Radio Safar" width="64" height="64">
+                    </div>
+                    <div class="tf-kicker">WELCOME TO</div>
+                    <h2 class="tf-title" id="ticketHeading">Radio Safar Travels Limited</h2>
+                    <div class="tf-subtitle">E-Ticket Booking System</div>
+                    <p class="tf-desc">Plan your journey and generate your Radio Safar e-ticket.</p>
                     <p class="tf-notice">This is a fun Radio Safar experience ticket — not a real bus reservation.</p>
                 </div>
 
