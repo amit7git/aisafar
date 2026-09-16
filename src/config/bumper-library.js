@@ -641,6 +641,22 @@ export const ATMOSPHERE_BUMPERS = {
         "🎧 क्या बोले… बस ज़ोर से बजाओ।",
         "📻 सुनने वाला… हमेशा नरम दिल।",
         "🔊 स्पीकर से भी ज़्यादा… दिल music का मालिक।"
+    ],
+    saathi: [
+        "🤖 सफ़र साथी बोला… «गाना बदलूँ?»",
+        "🎙️ सफ़र साथी… हर सफ़र का co-pilot।",
+        "💬 पूछो… साथी बताएगा… दिल चुनेगा।",
+        "🧭 साथी का सुझाव… हिट जैसा।",
+        "🎧 साथी समझ गया… playlist तैयार।",
+        "🤖 «अगला गाना?» — साथी ने इशारे से कहा।",
+        "💭 साथी सोचता है… सीधा बजाता है।",
+        "🛰️ साथी सटीक… scene बनता है।",
+        "🎤 बोलो… साथी सुनता है… धुन चलाता है।",
+        "🤝 आप रेडियो… साथी आवाज़… दोनों जुड़े।",
+        "💡 साथी के आइडिया… बड़े काम के।",
+        "🎶 साथी… music mood… नया track… बस।",
+        "🪄 साफ़-साफ़ बोलो… साथी का जादू है।",
+        "⚡ साथी बजाए… चुटकी में मूड set।"
     ]
 };
 
@@ -680,7 +696,8 @@ const TAG_CATEGORIES = {
     bhakti: "general radio",
     devotional: "general radio",
     sukoon: "general radio",
-    peace: "general radio"
+    peace: "general radio",
+    saathi: "saathi"
 };
 
 /* Small stable hash so every classic bumper keeps ONE emoji across moments. */

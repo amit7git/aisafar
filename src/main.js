@@ -3,7 +3,10 @@ import { MOOD_PLAYLISTS } from './config/playlists.js';
 import { BUMPERS } from './config/bumpers.js';
 import { buildBumperPool } from './config/bumper-library.js';
 import { initClock } from './components/clock.js';
+import { initAiSafar, isAiOpen } from './components/ai-safar.js';
 import { initTicket, closeTicketModal } from './components/ticket.js';
+import { initDisplayBoard } from './components/display-board.js';
+import { registerAiSwitchSafarHandler, registerAiUiSync } from './services/ai-actions.js';
 import { playBusHorn } from './services/horn.js';
 import { initPresence } from './services/presence.js';
 import {
@@ -34,7 +37,8 @@ import {
     next as cmdNext,
     previous as cmdPrevious,
     toggleShuffle,
-    selectSafar
+    selectSafar,
+    isShuffleOn
 } from './services/radio-commands.js';
 import {
     renderMoodList,
@@ -121,8 +125,14 @@ import {
     // 1. Digital Clock
     initClock();
 
-    // 1b. Radio Safar Travels ticket experience (self-contained; read-only state)
+    // 1b. AI Safar Companion (self-contained; read-only player context)
+    initAiSafar();
+
+    // 1c. Radio Safar Travels ticket experience (self-contained; read-only state)
     initTicket(ui);
+
+    // 1d. Top-centre journey Display Board (speed, route, live count, messages)
+    const displayBoard = initDisplayBoard();
 
     // V3.1 — watch the ticket drawer so the LED status can reflect its state
     if (ui.ticketModal && "MutationObserver" in window) {
@@ -345,6 +355,17 @@ import {
         const isNowShuffled = toggleShuffle();
         ui.shuffle.setAttribute("aria-pressed", String(isNowShuffled));
     });
+
+    // AI Safar — sync visual UI from existing state getters after a dispatched action
+    // (shuffle indicator, mood button, playlist heading). Never stores its own copy
+    // of player state; reads only from the command layer / youtube.js.
+    function syncAiUi() {
+        ui.shuffle.setAttribute("aria-pressed", String(isShuffleOn()));
+        updateMoodButton(ui, activeMood);
+        $("playlistHeading").textContent = MOOD_PLAYLISTS[activeMood]?.playlistTitle || "";
+    }
+    registerAiSwitchSafarHandler(key => switchMood(key));
+    registerAiUiSync(syncAiUi);
 
     ui.horn.addEventListener("click", () =>
         playBusHorn(
@@ -669,6 +690,7 @@ import {
         const target = event.target;
         if (event.code === "Space" &&
             !["INPUT", "TEXTAREA", "SELECT", "BUTTON"].includes(target?.tagName) &&
+            !isAiOpen() &&
             !ui.modal.classList.contains("open") &&
             !ui.moodModal.classList.contains("open") &&
             !ui.infoModal.classList.contains("open") &&
@@ -729,6 +751,7 @@ import {
     window.addEventListener("load", () => {
         initPresence(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, count => {
             ui.online.textContent = `🟢 ${count} मुसाफ़िर`;
+            displayBoard.setOnline(count);
         });
     });
 

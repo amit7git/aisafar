@@ -3,7 +3,7 @@
  *
  * A thin, safe abstraction over the YouTube IFrame Player that exposes
  * only the actions the existing UI already supports. Both the current
- * HTML UI and any future interface (voice, etc.) should route
+ * HTML UI and any future interface (AI Safar, voice, etc.) should route
  * player commands through this module instead of calling youtube.js
  * exports directly.
  *
@@ -179,10 +179,9 @@ export function getPlayerStatus() {
 }
 
 /**
- * Minimal read-only snapshot of the current journey. Returns ONLY the small set
- * of fields the ticket experience needs; never player/playlist internals (no
- * video ids, no playlist ids/arrays). Fields that are not reliably available
- * are null.
+ * Minimal read-only snapshot for AI Safar. Returns ONLY the small set of fields
+ * the companion needs; never player/playlist internals (no video ids, no
+ * playlist ids/arrays). Fields that are not reliably available are null.
  */
 export function getPlayerSnapshot() {
     const track = currentTrack();

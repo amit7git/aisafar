@@ -194,11 +194,18 @@
                 <span class="book-ticket-btn__icon" aria-hidden="true">🎫</span>
                 <span class="book-ticket-btn__label">Book Ticket</span>
             </button>
-            <button class="info-button" id="infoBtn" type="button" aria-label="Information" title="Information">
-                i
-            </button>
         </div>
     </header>
+
+    <!-- ===== RADIO SAFAR DISPLAY BOARD (top-centre compact journey board) ===== -->
+    <section class="display-board" id="displayBoard" aria-label="Radio Safar journey board">
+        <span class="db-online" id="dbOnline" hidden>555</span>
+        <div class="db-text">
+            <span class="db-line db-line--1" id="dbLine1">WELCOME TO RADIO SAFAR</span>
+            <span class="db-line db-line--2" id="dbLine2">AMIT</span>
+        </div>
+        <button class="info-button" id="infoBtn" type="button" aria-label="Information" title="Information">i</button>
+    </section>
 
     <!-- ===== FIXED ANCHORED TRANSPARENT PLAYER CONTAINER ===== -->
     <main class="player">
@@ -610,6 +617,44 @@
 
             <p class="ticket-status" id="ticketStatus" role="status"></p>
         </div>
+    </div>
+
+    <!-- ===== सफ़र साथी — FLOATING RADIO COMPANION (desktop only) ===== -->
+    <div class="saathi">
+        <div class="saathi-panel" id="aiModal" role="dialog" aria-modal="false" aria-labelledby="aiHeading" aria-hidden="true">
+            <div class="saathi-panel__head">
+                <div>
+                    <div class="heading" id="aiHeading">सफ़र साथी</div>
+                    <div class="count" id="aiCount">Your AI Radio Companion</div>
+                    <p class="saathi-desc" id="aiDesc">Ask me to play a Safar, change the mood, skip a song, or control your music.</p>
+                </div>
+                <button class="control" id="closeAi" type="button" aria-label="Close Safar Saathi">✕</button>
+            </div>
+            <div class="ai-thread" id="aiThread" aria-live="polite"></div>
+            <div class="ai-starters" id="aiStarters" aria-label="Quick suggestions"></div>
+            <form class="ai-compose" id="aiCompose" novalidate>
+                <input class="ai-input" id="aiInput" type="text"
+                       placeholder="Boliye, aaj ka safar kaisa ho?…" maxlength="500"
+                       autocomplete="off" spellcheck="false"
+                       aria-label="Ask Safar Saathi">
+                <button class="control ai-send" id="aiSend" type="button" aria-label="Send to Safar Saathi">
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                </button>
+            </form>
+        </div>
+        <button class="saathi-launcher" id="aiBtn" type="button"
+                aria-label="Open Safar Saathi" aria-haspopup="dialog" aria-expanded="false" title="सफ़र साथी">
+            <svg class="saathi-launcher__icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5.4 13.2V12a6.6 6.6 0 0 1 13.2 0v1.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <rect x="3.2" y="11.4" width="4.6" height="6.6" rx="2.3" fill="currentColor"/>
+                <rect x="16.2" y="11.4" width="4.6" height="6.6" rx="2.3" fill="currentColor"/>
+                <path d="M9.2 8.9a4.4 4.4 0 0 1 0 3.4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.85"/>
+                <path d="M6.9 6.9a7.6 7.6 0 0 1 0 6.6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0.55"/>
+                <path d="M19.2 4.2l.5 1.15 1.15.5-1.15.5-.5 1.15-.5-1.15-1.15-.5 1.15-.5z" fill="currentColor"/>
+            </svg>
+            <span class="saathi-launcher__dot" aria-hidden="true"></span>
+            <span class="saathi-launcher__ring" aria-hidden="true"></span>
+        </button>
     </div>
 
     <!-- ===== RAIN MODE (bottom-left; desktop control) ===== -->
