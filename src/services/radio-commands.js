@@ -30,7 +30,8 @@ import {
     bootYouTubePlayer,
     loadMoodPlaylist,
     randomTrack,
-    supportsFullPlaylist
+    supportsFullPlaylist,
+    invalidateSeekState
 } from './youtube.js';
 
 /* ================================================================
@@ -54,11 +55,15 @@ export function pause() {
 
 export function next() {
     if (!player || !ready || playlistSwitching) return;
+    // Task-7 B — drop any still-settling seek so it can't paint onto the NEW
+    // track or resume into it.
+    invalidateSeekState();
     shuffle ? randomTrack() : player.nextVideo();
 }
 
 export function previous() {
     if (!player || !ready || playlistSwitching) return;
+    invalidateSeekState();
     shuffle ? randomTrack() : player.previousVideo();
 }
 
@@ -80,6 +85,7 @@ export function selectSafar(moodKey, callbacks) {
     if (!player || !ready) return false;
     if (moodKey === activeMood && !playlistSwitching) return false;
 
+    invalidateSeekState();
     setActiveMood(moodKey);
     setPlaylistSwitching(true);
 

@@ -224,8 +224,17 @@ function normalizeError(err) {
 }
 
 async function parseBody(req) {
-    if (req.body !== undefined) {
-        return (req.body !== null && typeof req.body === 'object' && !Array.isArray(req.body)) ? req.body : null;
+    let body;
+    try {
+        body = req.body;
+    } catch {
+        // The runtime helper's lazy req.body getter may throw (e.g. an
+        // ApiError for malformed JSON). Treated as "no pre-parsed body" so we
+        // fall back to our own stream parsing below instead of crashing.
+        body = undefined;
+    }
+    if (body !== undefined) {
+        return (body !== null && typeof body === 'object' && !Array.isArray(body)) ? body : null;
     }
     return new Promise(resolve => {
         let raw = '';

@@ -131,32 +131,6 @@ input:focus-visible {
     50%, 100% { opacity: 0.2; filter: none; }
 }
 
-/* Live Safar Beacon */
-.highway {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    border: 1px solid rgba(0, 255, 136, 0.25);
-    border-radius: 999px;
-    background: rgba(8, 12, 12, 0.52);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    color: #e2fced;
-    font-family: var(--sans);
-    font-size: clamp(11px, 1.05vw, 13px);
-    font-weight: 700;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-@keyframes pulseGlow {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(0.8); opacity: 0.4; }
-}
-
 /* Info Button */
 .info-button {
     width: 42px;
@@ -205,9 +179,14 @@ input:focus-visible {
 .console {
     pointer-events: auto;
     position: relative;
-    width: min(420px, 94vw);
+    /* Same horizontal footprint as the fixed display board
+       (desktop rule: min(600px, calc(100vw - 480px))) so the player's left
+       and right edges line up with the board. flex-shrink:0 keeps the
+       measured width from collapsing inside the .player flex row. */
+    flex-shrink: 0;
+    width: min(600px, calc(100vw - 480px));
     margin-bottom: 0;
-    padding: 14px 16px 14px;
+    padding: 10px 16px 10px;
     border: 1px solid rgba(255, 200, 100, 0.26);
     border-radius: 24px;
     background: var(--card-bg);
@@ -234,7 +213,7 @@ input:focus-visible {
     overflow: hidden;
     max-height: 500px;
     opacity: 1;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
     transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), 
                 opacity 0.22s ease,
                 margin-bottom 0.35s ease;
@@ -259,16 +238,16 @@ input:focus-visible {
     display: flex;
     align-items: center;
     gap: 14px;
-    min-height: 64px;
-    padding: 2px 2px 4px;
+    min-height: 56px;
+    padding: 0 2px 2px;
 }
 
 /* Spinning CD Disc */
 .cd {
     position: relative;
-    flex: 0 0 64px;
-    width: 64px;
-    height: 64px;
+    flex: 0 0 58px;
+    width: 58px;
+    height: 58px;
     border-radius: 50%;
     background: conic-gradient(from 45deg, #111, #444, #1b1b1b, #777, #111, #444, #1b1b1b, #888, #111);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.2);
@@ -327,17 +306,46 @@ input:focus-visible {
     gap: 3px;
 }
 
+/* The music visualiser fills the row where the "RADIO SAFAR" branding used to
+   sit: the badge now holds ONLY the expanded histogram. The visible title was
+   dropped (see markup aria-label) so a long song name keeps its row below. */
 .track-badge {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 5px;
-    font-size: 10px;
-    font-weight: 800;
-    color: var(--accent);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    height: 20px;
 }
 
+/* Expanded histogram — same waveBounce engine as before, scoped to the player
+   badge (higher specificity) so the identical-looking Safar Saathi typing
+   indicator (ai-msg--typing .sound-wave) keeps its own small sizing. */
+.track-badge .sound-wave {
+    display: none;
+    align-items: flex-end;
+    gap: 3px;
+    height: 20px;
+}
+
+.playing .track-badge .sound-wave {
+    display: inline-flex;
+}
+
+.track-badge .sound-wave span {
+    width: 4px;
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    animation: waveBounce 0.8s ease-in-out infinite alternate;
+}
+
+.track-badge .sound-wave span:nth-child(1) { height: 100%; animation-delay: 0s; }
+.track-badge .sound-wave span:nth-child(2) { height: 55%; animation-delay: 0.1s; }
+.track-badge .sound-wave span:nth-child(3) { height: 85%; animation-delay: 0.2s; }
+.track-badge .sound-wave span:nth-child(4) { height: 70%; animation-delay: 0.3s; }
+.track-badge .sound-wave span:nth-child(5) { height: 95%; animation-delay: 0.4s; }
+.track-badge .sound-wave span:nth-child(6) { height: 60%; animation-delay: 0.5s; }
+.track-badge .sound-wave span:nth-child(7) { height: 80%; animation-delay: 0.6s; }
+
+/* Original / shared histogram (used as the Safar Saathi typing indicator). */
 .sound-wave {
     display: none;
     align-items: flex-end;
@@ -370,7 +378,7 @@ input:focus-visible {
     text-overflow: ellipsis;
     white-space: nowrap;
     color: #fff;
-    font-size: clamp(13px, 1.35vw, 16px);
+    font-size: clamp(11px, 1vw, 12.5px);
     font-weight: 800;
     letter-spacing: -0.01em;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
@@ -383,9 +391,13 @@ input:focus-visible {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    flex: 0 0 74px;
+    flex: 0 0 192px;
+    width: 192px;
+    min-width: 192px;
+    max-width: 192px;
     height: 44px;
-    padding: 4px 6px;
+    min-height: 44px;
+    padding: 4px 8px;
     border-radius: 12px;
     border: 1px solid rgba(255, 180, 50, 0.45);
     background: linear-gradient(160deg, rgba(255, 170, 29, 0.25) 0%, rgba(20, 16, 12, 0.65) 100%);
@@ -418,15 +430,23 @@ input:focus-visible {
     opacity: 0.9;
 }
 
+/* Current playlist name inside the Playlist button. The button keeps a
+   fixed outer width/height (192x44 desktop, 100x40 mobile) equal in height
+   to the Songs button; the name NEVER truncates: names shorter than the
+   fixed width stay on one line, longer ones wrap onto additional lines
+   instead of showing "…". Multiple words break at spaces; an unbroken word
+   longer than the button wraps mid-word via overflow-wrap so nothing is
+   ever clipped, hidden or overlapped. */
 .mood-current {
     display: block;
     width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: break-word;
     color: #ffffff;
     font-size: 11.5px;
     font-weight: 800;
+    line-height: 1.3;
     text-align: center;
     margin-top: 2px;
 }
@@ -486,7 +506,7 @@ input:focus-visible {
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    margin-top: 10px;
+    margin-top: 6px;
     padding: 6px 10px;
     border-radius: 10px;
     background: rgba(0, 0, 0, 0.45);
@@ -571,7 +591,7 @@ input:focus-visible {
 
 /* ===== PROGRESS & SCRUBBER ===== */
 .progress {
-    margin-top: 8px;
+    margin-top: 6px;
     display: flex;
     flex-direction: column;
     gap: 3px;
@@ -591,7 +611,15 @@ input:focus-visible {
     width: 100%;
     height: 6px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.15);
+    /* Played portion = solid accent fill up to --progress, remaining portion =
+       the existing muted track. --progress (a percentage) is driven purely by
+       the existing seek value (updateProgress in youtube.js / scrubber input
+       in main.js) so the fill always mirrors what the slider shows. */
+    background: linear-gradient(to right,
+        var(--accent) 0%,
+        var(--accent) var(--progress, 0%),
+        rgba(255, 255, 255, 0.15) var(--progress, 0%),
+        rgba(255, 255, 255, 0.15) 100%);
     accent-color: var(--accent);
     cursor: pointer;
     outline: none;
@@ -663,17 +691,69 @@ input:focus-visible {
     align-items: stretch;
     gap: 8px;
     flex: 0 0 auto;
+    /* Move ONLY the Playlist + Songs buttons slightly upward so the song-name
+       row below them keeps a clean, unobstructed single line. Transform is
+       used (not margin) so no layout around the row shifts. */
+    transform: translateY(-4px);
 }
 
+/* Songs button mirrors the Playlist (mood) button's box exactly so the
+   top-right pair renders identically: same width, height, radius, padding,
+   border, gradient, shadow, transition, hover and active states. */
 .safar-controls .control {
-    flex: 0 0 48px;
-    width: 48px;
+    flex: 0 0 76px;
+    width: 76px;
+    min-width: 76px;
     height: 44px;
+    padding: 4px 6px;
     border-radius: 12px;
     color: #ffe5ad;
     border-color: rgba(255, 180, 50, 0.45);
-    background: linear-gradient(160deg, rgba(255, 170, 29, 0.22) 0%, rgba(20, 16, 12, 0.65) 100%);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    background: linear-gradient(160deg, rgba(255, 170, 29, 0.25) 0%, rgba(20, 16, 12, 0.65) 100%);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                inset 0 0 12px rgba(255, 170, 29, 0.12);
+    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Songs control: "Songs" label stacked ABOVE its icon. */
+#playlistBtn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+}
+
+/* Hover/active must match the Playlist (.mood-button) exactly. */
+.safar-controls #playlistBtn:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent-light);
+    background: linear-gradient(160deg, rgba(255, 170, 29, 0.4) 0%, rgba(20, 16, 12, 0.8) 100%);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45), 0 0 16px var(--accent-glow);
+}
+
+.safar-controls #playlistBtn:active {
+    transform: translateY(1px);
+}
+
+/* Songs label — identical text treatment to the Playlist (.mood-label). */
+.control-label {
+    display: block;
+    color: var(--accent-light);
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    line-height: 1;
+    text-transform: none;
+    opacity: 0.9;
+}
+
+/* The mood button label now reads "Playlist" (title case, not uppercased). */
+.mood-button .mood-label {
+    text-transform: none;
 }
 
 /* Frosted Tactile Transport Buttons */
@@ -961,6 +1041,19 @@ input:focus-visible {
     color: var(--accent-light);
 }
 
+/* Playlists panel (CHOOSE YOUR SAFAR): every playlist name stays FULLY
+   visible. Names wrap onto extra lines instead of being cut off with "…";
+   layout, icons, hover/active states and spacing are unchanged and the
+   name never overlaps the number/icon beside it (song-info is min-width:0).
+   The Songs panel track titles keep their existing single-line ellipsis. */
+#moodModal .playlist-item .song {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    overflow-wrap: break-word;
+    line-height: 1.4;
+}
+
 .song-artist {
     display: block;
     margin-top: 2px;
@@ -1010,18 +1103,20 @@ input:focus-visible {
     pointer-events: none;
 }
 
-/* Close button pinned while the card scrolls */
+/* Close button pinned to the modal's TOP-RIGHT corner (task-7 D): aligned
+   with the panel edge, clear of the brand block and profile photo, with a
+   thumb-friendly hit area. */
 .info-close-btn {
-    position: sticky;
+    position: absolute;
     top: 14px;
-    float: right;
-    width: 32px;
-    height: 32px;
-    margin-bottom: -32px;
-    border-radius: 10px;
+    right: 14px;
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
     font-size: 13px;
     flex-shrink: 0;
-    z-index: 2;
+    z-index: 3;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
 }
 
 /* Centered Brand */
@@ -1093,11 +1188,14 @@ input:focus-visible {
     box-shadow: 0 0 8px var(--accent);
 }
 
-/* Creator Profile Card */
+/* Creator Profile Card — centred vertically (photo → name → role → link
+   stack in the middle of the card), stage-3. Border/bg/padding unchanged. */
 .creator-card {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 14px;
+    text-align: center;
+    gap: 10px;
     margin-top: 8px;
     padding: 14px 16px;
     border-radius: 16px;
@@ -1119,13 +1217,16 @@ input:focus-visible {
 }
 
 .creator-details {
-    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     min-width: 0;
 }
 
 .creator-name {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
     font-size: 15.5px;
     font-weight: 800;
@@ -1493,12 +1594,6 @@ input:focus-visible {
         border-radius: 9px;
     }
 
-    .highway {
-        font-size: 10px;
-        padding: 6px 12px;
-        max-width: calc(100vw - 120px);
-    }
-
     .info-button {
         width: 36px;
         height: 36px;
@@ -1506,8 +1601,8 @@ input:focus-visible {
     }
 
     .console {
-        width: min(100%, 390px);
-        padding: 12px 12px 10px;
+        width: min(380px, 92vw);
+        padding: 10px 12px 8px;
         border-radius: 20px;
     }
 
@@ -1522,12 +1617,31 @@ input:focus-visible {
     }
 
     .track {
-        font-size: 13px;
+        font-size: 11px;
+    }
+
+    /* Mobile: keep the expanded histogram prominent but a touch slimmer so it
+       never crowds the smaller song title on narrow decks. */
+    .track-badge {
+        height: 16px;
+    }
+
+    .track-badge .sound-wave {
+        height: 16px;
+        gap: 2px;
+    }
+
+    .track-badge .sound-wave span {
+        width: 3px;
     }
 
     .mood-button {
-        flex: 0 0 68px;
+        flex: 0 0 100px;
+        width: 100px;
+        min-width: 100px;
+        max-width: 100px;
         height: 40px;
+        min-height: 40px;
         padding: 3px 5px;
     }
 
@@ -1536,11 +1650,17 @@ input:focus-visible {
     }
 
     .safar-controls .control {
-        flex: 0 0 40px;
-        width: 40px;
+        flex: 0 0 74px;
+        width: 74px;
+        min-width: 74px;
         height: 40px;
-        border-radius: 10px;
+        border-radius: 12px;
+        padding: 3px 5px;
         font-size: 12px;
+    }
+
+    .safar-controls #playlistBtn {
+        gap: 1px;
     }
 
     .bumper {
@@ -1600,7 +1720,6 @@ input:focus-visible {
     }
 
     .clock,
-    .highway,
     .info-button,
     .mood-button,
     .control {
@@ -1642,7 +1761,7 @@ input:focus-visible {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
 }
 
 /* Clock + mobile-only Rain control (column stack, header left) */
@@ -1653,14 +1772,15 @@ input:focus-visible {
     gap: 8px;
 }
 
+/* The whole header speed + online cluster was removed in this pass: the
+   clock (with mobile-only Rain control) sits on the left of the header and
+   BOOK TICKET · INFO on the right. Speed and the live online count are
+   rendered ONLY inside the display board (see .db-speed / .db-live). No
+   rule is left for .header-stats / .header-speed / .highway anywhere. */
+
 @media (max-width: 650px) {
     .header-actions {
         gap: 6px;
-    }
-
-    .highway {
-        min-width: 0;
-        max-width: calc(100vw - 175px);
     }
 }
 
@@ -2040,10 +2160,10 @@ input:focus-visible {
     -webkit-user-select: none;
     display: flex;
     align-items: center;
-    gap: 10px;
-    width: min(430px, calc(100vw - 440px));
+    gap: 12px;
+    width: min(340px, calc(100vw - 480px));
     box-sizing: border-box;
-    padding: 9px 16px;
+    padding: 11px 16px;
     border-radius: 12px;
     border: 1px solid rgba(255, 190, 80, 0.22);
     background: linear-gradient(168deg, rgba(12, 14, 19, 0.88) 0%, rgba(6, 8, 12, 0.92) 100%);
@@ -2058,17 +2178,61 @@ input:focus-visible {
     text-align: center;
 }
 
-/* Desktop: the top-centre online pill moves into the board's journey telemetry
-   (same single presence source), so the pill is hidden on desktop only.
-   The mobile layout keeps the pill in the header row. */
-@media (min-width: 651px) {
-    .highway,
-    .highway.header-item {
-        display: none;
+/* Desktop (>= 651px) overrides live BELOW the base .db-* rules (see a few
+   sections down) so equal-specificity cascade wins. Earlier header-only
+   staleness (the .header-stats / .highway blocks) is gone — the header is
+   now just clock on the left and BOOK TICKET · INFO on the right. */
+
+/* LED corner wrap in the MUSIC PLAYER'S LED STYLE (stage-1): instead of the
+   old marching strip, a single full-cover dot grid in the VU-meter palette
+   (neon green → amber → red segments, exactly the .vu-seg colours) is
+   revealed ONLY as a 3px rounded-rect ring via the mask content-box/xor
+   trick, so the LED dots follow the board's rounded corners exactly (every
+   corner wraps) and run around the whole perimeter seamlessly. The ring
+   sits 3px outside the board's border box (the board is position:fixed,
+   so no layout change, no horizontal scroll). No marching — the dots sit
+   in place and breathe with a slow opacity pulse, matching the player's
+   vuPulse rhythm; reduced motion keeps them static. pointer-events:none
+   avoids input. */
+.display-board::before {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    z-index: 0;
+    padding: 3px;
+    border-radius: 17px;
+    pointer-events: none;
+    background:
+        repeating-linear-gradient(90deg,
+            rgba(0, 255, 136, 0.5) 0 2px, rgba(0, 255, 136, 0.1) 2px 3px,
+            rgba(0, 255, 136, 0.5) 3px 5px, rgba(0, 255, 136, 0.1) 5px 6px,
+            rgba(255, 208, 0, 0.45) 6px 8px, rgba(255, 208, 0, 0.1) 8px 9px,
+            rgba(255, 51, 68, 0.4) 9px 11px, rgba(255, 51, 68, 0.1) 11px 12px,
+            transparent 12px 15px),
+        repeating-linear-gradient(0deg,
+            rgba(0, 255, 136, 0.5) 0 2px, rgba(0, 255, 136, 0.1) 2px 3px,
+            rgba(0, 255, 136, 0.5) 3px 5px, rgba(0, 255, 136, 0.1) 5px 6px,
+            rgba(255, 208, 0, 0.45) 6px 8px, rgba(255, 208, 0, 0.1) 8px 9px,
+            rgba(255, 51, 68, 0.4) 9px 11px, rgba(255, 51, 68, 0.1) 11px 12px,
+            transparent 12px 15px);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .display-board::before {
+        animation: dbLedPulse 2.4s ease-in-out infinite;
     }
 }
 
-/* Digital text stack: status / CURRENT→NEXT route / telemetry */
+@keyframes dbLedPulse {
+    0%, 100% { opacity: 0.55; }
+    50% { opacity: 1; }
+}
+
+/* Digital text stack: status / CURRENT→NEXT→UPCOMING route / telemetry */
 .db-text {
     flex: 1;
     min-width: 0;
@@ -2078,19 +2242,21 @@ input:focus-visible {
     gap: 3px;
 }
 
-/* Head: the single rotating status unit. Extra bottom margin opens a clearly
-   visible but compact gap between line 1 (status) and line 2 (route), so the
-   location names read cleanly while the overall board stays compact. */
+/* Head: Row 2 of the board — the PROMO TICKER ONLY (the welcome message
+   moved up into Row 1). It is a single full-width scrolling bar. */
 .db-head {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
+    display: block;
+    width: 100%;
     max-width: 100%;
+    min-width: 0;
     margin-bottom: 3px;
 }
 
-.db-head__status {
+/* Row 1 centre: the STATIC welcome message between Speed (left) and Online
+   (right). Never animated, never part of the marquee, exact case kept. */
+.db-welcome {
+    flex: 1 1 auto;
+    min-width: 0;
     display: block;
     max-width: 100%;
     white-space: nowrap;
@@ -2101,16 +2267,86 @@ input:focus-visible {
     font-weight: 800;
     letter-spacing: 0.09em;
     line-height: 1.1;
-    text-transform: uppercase;
+    text-transform: none;
     text-shadow:
         0 0 12px rgba(255, 190, 80, 0.35),
         0 0 34px rgba(255, 170, 29, 0.12);
 }
 
-/* Route row: CURRENT → NEXT, cities prominent with quiet micro-labels.
-   The two stops get distinct complementary colours: CURRENT reads cool
-   (cyan), NEXT reads warm (amber) — the only two accent colours on the
-   board besides the green LIVE dot. */
+/* Row 2 right side: the promo ticker. Static message is hidden by default
+   (shown only under reduced motion); the track holds two identical copies
+   of the 20-message list built by display-board.js with "•" separators and
+   is translated -50% for a seamless infinite CSS loop. */
+.db-promo {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.db-promo__track {
+    display: inline-flex;
+    align-items: center;
+    will-change: transform;
+}
+
+.db-promo__item,
+.db-promo__static {
+    display: inline-block;
+    white-space: nowrap;
+    color: #ffe9c2;
+    font-family: 'Orbitron', var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 1.1;
+    text-transform: none;
+    text-shadow: 0 0 10px rgba(255, 190, 80, 0.28);
+}
+
+.db-promo__sep {
+    display: inline-block;
+    white-space: nowrap;
+    color: #7cff6b;
+    padding: 0 10px;
+    text-shadow: 0 0 8px rgba(124, 255, 107, 0.55);
+}
+
+.db-promo__static {
+    display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .db-promo__track:not(:empty) {
+        /* Slow crawl (~76s full lap) so each promotional message stays
+           readable. Purely horizontal, seamless (-50% translate), clipped.
+           Duration was 55s before; task-7 A3 calms it to 70-90s band. */
+        animation: dbPromoScroll 76s linear infinite;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .db-promo__track {
+        display: none;
+    }
+
+    .db-promo__static {
+        display: inline-block;
+    }
+}
+
+@keyframes dbPromoScroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+   /* Route row: CURRENT → NEXT → UPCOMING, cities prominent with quiet
+   micro-labels. CURRENT reads cool (cyan), NEXT mint green, UPCOMING
+   warm amber — three distinct accents beside the green LIVE dot and the
+   green blinking arrows. Two longer green arrows separate the three stops. */
 .db-navi {
     width: 100%;
     display: flex;
@@ -2131,18 +2367,18 @@ input:focus-visible {
     gap: 2px;
 }
 
-.db-nav--cur {
-    align-items: flex-end;
-}
+/* CURRENT / NEXT / UPCOMING labels are centred directly beneath their own
+   city name, within the same column (not relative to the whole board). All
+   three columns share the identical centring, so each label is perfectly
+   aligned under its city name. Label colours stay as they were. */
 
-.db-nav--nxt {
-    align-items: flex-start;
-}
-
+/* Single-line city names (desktop + mobile). Names NEVER wrap, ellipsize or
+   clip — even the longest (VISAKHAPATNAM) keeps its full text on one line.
+   Columns size to their widest name (content-sized) and a slightly smaller
+   mobile city font keeps every row inside the board, so names never overlap
+   a neighbouring column or spill characters onto a second line. */
 .db-loc {
-    max-width: 30ch;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: nowrap;
     font-weight: 800;
 }
 
@@ -2151,7 +2387,15 @@ input:focus-visible {
     text-shadow: 0 0 12px rgba(90, 210, 255, 0.28);
 }
 
+/* Task-7 A1 — each stop reads differently: CURRENT cool cyan, NEXT mint
+   green (clearly distinct from the neon #7cff6b arrows / LIVE dot), and
+   UPCOMING warm amber. */
 .db-nav--nxt .db-loc {
+    color: #68f2a3;
+    text-shadow: 0 0 12px rgba(104, 242, 163, 0.3);
+}
+
+.db-nav--upc .db-loc {
     color: #ffd573;
     text-shadow: 0 0 12px rgba(255, 190, 80, 0.28);
 }
@@ -2164,23 +2408,126 @@ input:focus-visible {
     line-height: 1;
 }
 
+/* Arrows are drawn LONGER (scaleX stretches the glyph horizontally without
+   changing its height or the row height) so the CURRENT → NEXT → UPCOMING
+   flow reads clearly. scaleX 1.7 keeps them well clear of the city names. */
 .db-arrow {
-    color: rgba(255, 190, 80, 0.75);
+    display: inline-block;
+    transform: scaleX(1.7);
+    color: #7cff6b;
     font-size: 1.1em;
     line-height: 1;
-    text-shadow: 0 0 10px rgba(255, 170, 29, 0.4);
+    text-shadow: 0 0 10px rgba(124, 255, 107, 0.55);
 }
 
-/* Telemetry (LAST row): speed left, LIVE count right — one calm datarow. */
+/* The CURRENT→NEXT→UPCOMING arrows blink gently in neon green (the same green
+   as the LIVE count) but NOT simultaneously: the second arrow is phase-shifted
+   by ~half a cycle (negative delay starts it already mid-glide, so the two
+   alternate from the very first frame). Opacity-only keyframes, so the glyphs
+   never shift layout; the global reduced-motion rule freezes both steadily
+   visible for visitors who prefer no motion. */
+@media (prefers-reduced-motion: no-preference) {
+    .db-arrow {
+        animation: dbArrowBlink 1.3s ease-in-out infinite;
+    }
+
+    .db-arrow--alt {
+        animation-delay: -0.65s;
+    }
+}
+
+@keyframes dbArrowBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+}
+
+/* Telemetry (ROW 1): speed LEFT · static welcome CENTRE · live count RIGHT —
+   one calm datarow. Speed and online keep fixed widths; the welcome fills
+   the middle zone and is centred inside it. */
 .db-meta {
     width: 100%;
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
+    gap: 8px;
     font-size: clamp(8px, 0.85vw, 9px);
     letter-spacing: 0.1em;
     line-height: 1.1;
     white-space: nowrap;
+}
+
+.db-speed,
+.db-live {
+    flex: 0 0 auto;
+}
+
+/* Desktop (>= 651px): THE DISPLAY BOARD IS THE TOPMOST VISUAL ELEMENT.
+   It is fixed to the very top strip with a minimal air gap (14px) so there
+   is effectively no empty space above it. The header controls (TIME left,
+   BOOK TICKET · INFO right) sit at the VERY TOP corners of the viewport —
+   the board only occupies the centred middle of the top strip, so on an
+   ~1440px screen the clock (~x40–162) and the right cluster (~x1090–1330)
+   clear the ~600px board (x420–1020) by large margins. Where the viewport
+   gets narrow enough for the right cluster to approach the board (down at
+   1024px: ticket starts ~x797), the board width formula
+   `min(600px, calc(100vw - 480px))` shrinks the board first, keeping
+   ~13px of clearance at 1024 and reverting to the full 600px at >= 1080px.
+   Everything else below the top strip (title, player console) is untouched.
+
+   Keep long + compact: 55-65% of the viewport width, ~80-90px tall, wider
+   than the ~420px music console. Placed after the base .db-* rules so
+   equal-specificity cascade applies the LED sizes. */
+@media (min-width: 651px) {
+    .header {
+        /* Header controls at the very top: only a small safe-area gap above
+           them. The fixed board (z 15) floats over the header strip's empty
+           middle; the clock and the Book Ticket · Info groups are clear of
+           its width (see board width formula below). */
+        padding-top: max(10px, env(safe-area-inset-top));
+    }
+
+    .display-board {
+        top: calc(env(safe-area-inset-top) + 14px);
+        width: min(600px, calc(100vw - 480px));
+        gap: 12px;
+        padding: 11px 18px;
+        border-radius: 14px;
+    }
+
+    .db-text {
+        gap: 6px;
+    }
+
+    .db-head {
+        margin-bottom: 0;
+    }
+
+    .db-welcome {
+        font-size: 13.5px;
+        letter-spacing: 0.12em;
+    }
+
+    /* Route line is the prominent destination row of the LED panel. Long
+       city names (VISAKHAPATNAM, BHUBANESWAR) never ellipsize — the wide
+       board gives them plenty of room and they stay on one full line. */
+    .db-navi {
+        font-size: 14.5px;
+        gap: 22px;
+    }
+
+    .db-nav-label {
+        font-size: 7px;
+    }
+
+    .db-meta {
+        font-size: 11px;
+    }
+
+    /* Title firmly below the board: top edge anchored at 205px. */
+    .radio-bg__label {
+        top: 205px;
+        transform: translateX(-50%);
+    }
 }
 
 .db-speed {
@@ -2208,13 +2555,15 @@ input:focus-visible {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    color: #ffd573;
+    color: #7cff6b;
     font-weight: 800;
 }
 
 /* LIVE indicator: a green blinking dot with the count as the only label —
-   no MUSAFIR / LISTENERS / ONLINE USERS words. Stays visible but static
-   when the visitor prefers reduced motion. */
+   no MUSAFIR / LISTENERS / ONLINE USERS words. The count text itself is the
+   same neon green (#7cff6b) as the dot, so the whole right-hand telemetry
+   reads as one green beacon. Stays visible but static when the visitor
+   prefers reduced motion. */
 .db-live__dot {
     color: #4ade80;
     font-size: 0.9em;
@@ -2225,8 +2574,8 @@ input:focus-visible {
 .db-live__count {
     font-size: 1.2em;
     letter-spacing: 0.08em;
-    color: #ffd573;
-    text-shadow: 0 0 10px rgba(255, 170, 29, 0.4);
+    color: #7cff6b;
+    text-shadow: 0 0 10px rgba(124, 255, 107, 0.45);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -2240,148 +2589,11 @@ input:focus-visible {
     50% { opacity: 0.12; }
 }
 
-/* Compact Info button that lives inside the board (top-right). Stays
-   clickable while the board itself never intercepts input. */
-.display-board .info-button {
-    flex: 0 0 auto;
-    width: 28px;
-    height: 28px;
-    font-size: 0.95rem;
-    pointer-events: auto;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 190, 80, 0.3);
-    background: rgba(18, 16, 9, 0.72);
-    color: var(--accent-light);
-    font-family: Georgia, serif;
-    font-weight: 700;
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.12), 0 3px 10px rgba(0, 0, 0, 0.4);
-    transition: border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.18s ease;
-}
-
-.display-board .info-button:hover {
-    border-color: var(--accent);
-    color: #fff;
-    box-shadow: 0 0 14px var(--accent-glow), 0 3px 12px rgba(0, 0, 0, 0.45);
-}
-
-.display-board .info-button:active {
-    transform: scale(0.92);
-}
-
-/* ---- Mobile: compact readout below the header, clear of the
-   clock / Rain control / Book Ticket / title ---- */
-@media (max-width: 650px) {
-    .display-board {
-        top: calc(env(safe-area-inset-top) + 86px);
-        width: min(360px, 92vw);
-        gap: 5px;
-        padding: 2px 10px;
-        border-radius: 10px;
-    }
-
-    .db-text {
-        gap: 1px;
-    }
-
-    .db-head {
-        gap: 0;
-        margin-bottom: 2px;
-    }
-
-    .db-head__status {
-        font-size: 8.5px;
-        letter-spacing: 0.05em;
-    }
-
-    .db-navi {
-        font-size: 8px;
-        gap: 8px;
-        letter-spacing: 0.08em;
-    }
-
-    .db-nav {
-        gap: 1px;
-    }
-
-    .db-nav-label {
-        display: none;
-    }
-
-    .db-meta {
-        font-size: 6.5px;
-        letter-spacing: 0.05em;
-        padding-top: 0;
-    }
-
-    .display-board .info-button {
-        width: 22px;
-        height: 22px;
-        font-size: 0.8rem;
-    }
-}
-
-/* ---- Short desktop windows: tighten the board so it always stays clear of
-   the title logo below (and the top-right Book Ticket on the sides) ---- */
-@media (min-width: 651px) and (max-height: 920px) {
-    .display-board {
-        width: min(430px, calc(100vw - 430px));
-        padding: 8px 14px;
-        border-radius: 11px;
-    }
-
-    .db-head__status {
-        font-size: 13px;
-    }
-
-    .db-navi {
-        font-size: 12px;
-    }
-
-    .db-meta {
-        font-size: 9px;
-    }
-}
-
-@media (min-width: 651px) and (max-height: 720px) {
-    .display-board {
-        padding: 6px 12px;
-    }
-
-    .db-head__status {
-        font-size: 12px;
-    }
-
-    .db-navi {
-        font-size: 11px;
-    }
-
-    .db-meta {
-        font-size: 8.5px;
-    }
-}
-
-/* Mobile + short screen safety: keep the readout above the title */
-@media (max-width: 650px) and (max-height: 720px) {
-    .display-board {
-        top: calc(env(safe-area-inset-top) + 82px);
-        padding: 2px 9px;
-        gap: 5px;
-        border-radius: 9px;
-    }
-
-    .db-head__status {
-        font-size: 7.5px;
-    }
-
-    .db-navi {
-        font-size: 7.5px;
-        gap: 7px;
-    }
-
-    .db-meta {
-        font-size: 6.5px;
-    }
-}
+/* The Info button lives in the header (.header-actions), not inside the
+   board, since Task 3 — the old .display-board .info-button rules and the
+   short-window board-shrink media queries were removed to keep a single,
+   consistent board definition (desktop sizing lives in the min-width:651
+   block above; mobile sizing lives in the mobile override block below). */
 
 /* Reduced motion: the display only swaps text — no motion to suppress; the
    global prefers-reduced-motion rule already zeroes CSS animation/transition
@@ -2421,6 +2633,10 @@ input:focus-visible {
     display: inline-flex;
     align-items: center;
     gap: 7px;
+    /* Fixed outer size, frozen to the label's widest ("Raining") state, so the
+       Rain <-> Raining toggle never resizes or moves the control. */
+    width: 111.23px;
+    height: 36px;
     padding: 10px 14px;
     border-radius: 999px;
     border: 1px solid rgba(255, 200, 100, 0.3);
@@ -3280,23 +3496,29 @@ input:focus-visible {
 }
 
 @media (max-width: 650px) {
+    /* Stage-4 — the ticket modal becomes a SMALLER centred card on mobile:
+       it no longer fills the whole width as a tall bottom sheet, so it
+       occupies less of the viewport while staying fully readable — the
+       panel scrolls internally (base .ticket-panel overflow-y:auto). */
     .modal--drawer {
-        align-items: flex-end;
+        align-items: center;
+        justify-content: center;
+        padding: 12px;
     }
 
     .modal--drawer .ticket-panel {
-        width: 100%;
+        width: min(420px, 94vw);
         height: auto;
-        max-height: 84vh;
-        border-radius: 18px 18px 0 0;
-        border-right: 1px solid rgba(122, 88, 46, 0.55);
+        max-height: min(72vh, 680px);
+        border-radius: 20px;
+        border-right: 1px solid rgba(255, 190, 80, 0.35);
         border-top: 1px solid rgba(255, 190, 80, 0.35);
-        border-bottom: 1px solid rgba(122, 88, 46, 0.55);
-        transform: translateY(100%);
+        border-bottom: 1px solid rgba(255, 190, 80, 0.35);
+        transform: translateY(16px) scale(0.96);
     }
 
     .modal.open .modal--drawer .ticket-panel {
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
     }
 
     @media (max-width: 480px) {
@@ -3310,6 +3532,90 @@ input:focus-visible {
         padding: 0 10px;
         font-size: 11px;
         gap: 5px;
+    }
+}
+
+/* Generate Journey (ticket modal) — mobile only: proportionally smaller
+   typography and minimal spacing/padding so the ENTIRE form fits the mobile
+   card without vertical scrolling. Desktop styling is untouched (this block
+   lives under the existing 650px breakpoint). No fields, labels, buttons,
+   logic, validation or generated-journey behaviour are changed, and nothing
+   is hidden or removed. */
+@media (max-width: 650px) {
+    .ticket-panel {
+        padding: 10px;
+    }
+
+    .tf-head {
+        padding: 2px 2px 4px;
+    }
+
+    .tf-brand {
+        margin-bottom: 4px;
+    }
+
+    .tf-logo {
+        width: 40px;
+        height: 40px;
+        border-radius: 11px;
+    }
+
+    .tf-kicker {
+        font-size: 7.5px;
+    }
+
+    .tf-title {
+        margin: 2px 0 0;
+        font-size: 18px;
+    }
+
+    .tf-subtitle {
+        margin: 2px 0 0;
+        font-size: 8.5px;
+        letter-spacing: 0.22em;
+    }
+
+    .tf-desc {
+        margin: 4px 0 0;
+        font-size: 11px;
+        line-height: 1.35;
+    }
+
+    .tf-notice {
+        margin: 4px 0 0;
+        padding: 5px 8px;
+        font-size: 9.5px;
+        line-height: 1.3;
+    }
+
+    #ticketForm {
+        gap: 6px;
+        margin-top: 8px;
+    }
+
+    .tf-grid {
+        gap: 6px;
+    }
+
+    .tf-field {
+        gap: 2px;
+    }
+
+    .tf-label {
+        font-size: 8.5px;
+    }
+
+    .tf-field input,
+    .tf-field select {
+        height: 30px;
+        padding: 0 10px;
+        border-radius: 8px;
+        font-size: 13px;
+    }
+
+    .tf-submit {
+        min-height: 36px;
+        font-size: 13px;
     }
 }
 
@@ -3449,3 +3755,255 @@ input:focus-visible {
 .t-row--total b {
     color: #8c1410;
 }
+
+/* ============================================================
+   MOBILE OVERRIDES — Radio Safar upper-section clean-up
+   (max-width 650px ONLY. Desktop rendering is untouched —
+    every override below lives inside a mobile media query.)
+   ============================================================ */
+@media (max-width: 650px) {
+
+    /* ---- Mobile header: one clean line at the very top of the screen ----
+       [ TIME ] ................. [ info "i" ]
+       Task 3: Time + Info move to the TOPMOST row on mobile. The header is
+       raised above the display board (z 30 > board 15) so the controls stay
+       fully accessible; the board below is shifted down to make room (its
+       top is now env + 58px, directly under this row). Speed + live online
+       are NOT in the header — both live inside the display board only.
+       Book Ticket is floated bottom-right (fixed) and Rain bottom-left,
+       paired at the same level in the lower action zone. */
+    .header {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        grid-template-rows: auto;
+        grid-template-areas:
+            "clock info";
+        align-items: center;
+        justify-content: stretch;
+        column-gap: 12px;
+        padding: calc(env(safe-area-inset-top) + 8px) 14px 8px;
+        z-index: 30;
+        width: 100%;
+    }
+
+    /* Clock: predictable top-left slot of the header grid */
+    .clock-col {
+        grid-area: clock;
+        min-width: 0;
+    }
+
+    /* Info "i": top-right slot of the header grid. The header itself is
+       pointer-events:none, so the button is explicitly clickable again. */
+    .info-button {
+        grid-area: info;
+        justify-self: end;
+        align-self: center;
+        width: 40px;
+        height: 40px;
+        font-size: 1.05rem;
+        pointer-events: auto;
+    }
+
+    /* Book Ticket: freed from the grid and floated to the bottom-right
+       action zone, paired with the Rain control (bottom-left) at the same
+       vertical level. Explicitly clickable for the same pointer-events
+       reason as the info button. */
+    .header-actions {
+        display: contents;
+    }
+
+    .header-actions .book-ticket-btn {
+        position: fixed;
+        right: 16px;
+        bottom: 252px;
+        z-index: 30;
+        height: 36px;
+        padding: 0 12px;
+        font-size: 11px;
+        gap: 5px;
+        pointer-events: auto;
+    }
+
+    /* Rain: floating bottom-left control at the same vertical level as the
+       bottom-right Book Ticket. Header is pointer-events:none, restore auto. */
+    .rain-btn--mobile {
+        position: fixed;
+        left: 16px;
+        bottom: 252px;
+        z-index: 30;
+        /* Same fixed-size treatment, frozen to its mobile "Raining" width. */
+        width: 108.48px;
+        height: 36px;
+        padding: 10px 14px;
+        font-size: 11px;
+        pointer-events: auto;
+    }
+
+    /* ---- Display board: directly under the top header row ----
+       Fixed with an 8px air gap from the header row (which now caps at
+       env + ~56px). Task 3 moved the Time/Info controls to the very top, so
+       the board starts below them instead of at the status-bar line. Being
+       position:fixed it covers nothing below it; the label below keeps its
+       own clear step. */
+    .display-board {
+        top: calc(env(safe-area-inset-top) + 58px);
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(380px, 92vw);
+        gap: 8px;
+        padding: 6px 12px;
+        border-radius: 12px;
+        -webkit-backdrop-filter: blur(12px) saturate(150%);
+        backdrop-filter: blur(12px) saturate(150%);
+    }
+
+    .db-text {
+        gap: 3px;
+    }
+
+    .db-head {
+        margin-bottom: 1px;
+    }
+
+    .db-welcome {
+        font-size: 10.5px;
+        letter-spacing: 0.08em;
+    }
+
+    .db-promo {
+        padding-left: 0;
+    }
+
+    .db-promo__item,
+    .db-promo__static {
+        font-size: 9.5px;
+        letter-spacing: 0.06em;
+    }
+
+    .db-promo__sep {
+        padding: 0 7px;
+    }
+
+    /* Route row: single-line city names. Columns size to their widest
+       (never-cropped) name and the slightly smaller city font keeps even
+       the longest names (VISAKHAPATNAM) inside the board — no wrapping,
+       no overlap between columns, no horizontal scroll. */
+    .db-navi {
+        width: 100%;
+        font-size: 10.5px;
+        gap: 8px;
+        letter-spacing: 0.1em;
+    }
+
+    .db-nav {
+        flex: 0 1 auto;
+        min-width: 0;
+        gap: 1px;
+    }
+
+    .db-loc {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        font-size: 9px;
+    }
+
+    .db-nav-label {
+        display: block;
+        font-size: 5.5px;
+        letter-spacing: 0.14em;
+        line-height: 1;
+    }
+
+    .db-arrow {
+        flex: 0 0 auto;
+    }
+
+    .db-meta {
+        font-size: 9.5px;
+        letter-spacing: 0.08em;
+    }
+
+    /* ---- Radio Safar branding: clear separation below the board ----
+       Title → tagline → bumper pill each keep their own breathing room.
+       The label is anchored at its TOP edge (translateX only) so the fixed
+       offset puts the whole block below the board predictably. The board
+       now starts at env + 58px (below the top Time/Info header row) and is
+       ~73-85px tall, so env + 152px keeps the title a clear step below it.
+       Typography, fonts, colours and glow are untouched. */
+    .radio-bg__label {
+        top: calc(env(safe-area-inset-top) + 152px);
+        transform: translateX(-50%);
+    }
+}
+
+/* ============================================================
+   PLAYLIST + SONGS — shared small RIGHT-SIDE floating panels
+   Both windows (playlistModal + moodModal) drop the full-screen dark
+   backdrop and open as a small matched panel tucked directly below the
+   Info ("i") button near the top-right. The shared class guarantees
+   identical presentation for both: same width, height, top/right offset,
+   radius, border, shadow, background, typography, close button, spacing,
+   scrolling and responsive rules. The page behind stays fully visible;
+   the existing setBackdropInert() keeps it non-interactive while open.
+   ============================================================ */
+.modal--side {
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 0;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+.modal--side .panel {
+    pointer-events: auto;
+    width: min(304px, 88vw);
+    /* Task 3: desktop-side panels extend close to the lowest safe point —
+       viewport-relative, never an arbitrary fixed cap. The panel starts at
+       the top offset (env + 60px, see margin) and keeps a bottom safety
+       space so content is never clipped against the edge of the screen. */
+    max-height: calc(100vh - env(safe-area-inset-top) - 80px);
+    margin: calc(env(safe-area-inset-top) + 60px) clamp(16px, 3vw, 40px) 0 0;
+    border-radius: 16px;
+    background: linear-gradient(160deg, rgba(22, 26, 33, 0.96) 0%, rgba(10, 12, 16, 0.99) 100%);
+    transform: translateX(24px) scale(0.96);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal--side.open .panel {
+    transform: translateX(0) scale(1);
+}
+
+/* Task 3: while either side panel (Playlist/Songs) is open on desktop the
+   floating Safar Saathi launcher is hidden — UI visibility only, the panel's
+   existing .open state is reused, nothing is re-laid out.
+   Mobile stays untouched: there the launcher is already display:none. */
+@media (min-width: 651px) {
+    body:has(.modal--side.open) .saathi-launcher {
+        opacity: 0;
+        pointer-events: none;
+    }
+}
+
+/* Task 3: on mobile the Playlist/Songs panels are HORIZONTALLY CENTERED
+   instead of right-tucked. The flex container centers the panel (equivalent
+   to left:50% + translateX(-50%)) which stays 100% compatible with the
+   existing open/close translateX entrance animation. The panel anchors below
+   the top Time/Info row (never covering them) and floats as a compact panel;
+   it may overlap the display board on short screens but never the header
+   controls, and never becomes a full-screen backdrop. */
+@media (max-width: 650px) {
+    .modal--side {
+        justify-content: center;
+    }
+
+    .modal--side .panel {
+        width: min(320px, 86vw);
+        max-height: min(62vh, 520px);
+        margin: calc(env(safe-area-inset-top) + 134px) 0 0 0;
+        border-radius: 14px;
+    }
+}
+
+

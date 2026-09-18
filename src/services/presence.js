@@ -36,11 +36,12 @@ export function initPresence(supabaseUrl, supabaseKey, onCountUpdate) {
                 const state = presenceChannel.presenceState();
                 const count = Object.values(state)
                     .reduce((total, users) => total + (Array.isArray(users) ? users.length : 0), 0);
-                
-                // Count at least 1 for yourself + other active tabs/devices + 555 offset
+
+                // Count at least 1 for yourself + other active tabs/devices.
+                // The displayed number is the real presence count — no base
+                // offset is added, so the UI never shows a fabricated 555/556.
                 const totalActive = Math.max(1, count);
-                const displayCount = totalActive + 555;
-                onCountUpdate(displayCount);
+                onCountUpdate(totalActive);
             };
 
             presenceChannel

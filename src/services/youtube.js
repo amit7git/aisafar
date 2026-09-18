@@ -16,10 +16,21 @@ export let playlistSwitching = false;
 export let isSeeking = false;
 export let pendingSeek = null;
 export let pendingSeekAt = 0;
+// Task-7 B — seek-epoch guards: trackVersion bumps on every track change so
+// any still-settling seek (paint target or 700ms resume timer) knows it is
+// stale and must not touch the NEWLY cued track. seekVersion is the epoch
+// snapshot taken when the last seek was committed.
+let trackVersion = 0;
+let seekVersion = 0;
 let progressTimer;
 let booted = false;
 let playIntent = false;
 let playerCallbacks = null;
+let seekRestoreTimer = null;
+
+const YT_STATE = (typeof YT !== "undefined" && YT.PlayerState) || {
+    UNSTARTED: -1, ENDED: 0, PLAYING: 1, PAUSED: 2, BUFFERING: 3, CUED: 5
+};
 
 export const formatTime = seconds => {
     seconds = Math.max(0, Math.floor(Number(seconds) || 0));
@@ -61,6 +72,22 @@ export function setSeekingState(seeking) {
     isSeeking = seeking;
 }
 
+/* Task-7 B — invalidate any still-settling seek when the track changes.
+   MUST be called before switching tracks (NEXT / PREVIOUS / random /
+   playlist load / error-advance) so a stale pendingSeek can never paint
+   the old target time on the new video and a stale resume timer can never
+   playVideo() into it. Idempotent — safe to call repeatedly. */
+export function invalidateSeekState() {
+    trackVersion += 1;
+    if (seekRestoreTimer) {
+        clearTimeout(seekRestoreTimer);
+        seekRestoreTimer = null;
+    }
+    pendingSeek = null;
+    pendingSeekAt = 0;
+    isSeeking = false;
+}
+
 export function resetPlaylistState(ui) {
     playlistIds = [];
     currentIndex = -1;
@@ -68,6 +95,7 @@ export function resetPlaylistState(ui) {
     ui.list.replaceChildren();
     ui.seek.max = "0";
     ui.seek.value = "0";
+    ui.seek.style.setProperty("--progress", "0%");
     ui.current.textContent = "0:00";
     ui.total.textContent = "0:00";
     ui.title.textContent = "Loading the road…";
@@ -84,15 +112,43 @@ export function updateProgress(ui) {
     if (pendingSeek !== null && !isSeeking) {
         ui.seek.value = String(pendingSeek);
         ui.current.textContent = formatTime(pendingSeek);
-        if (Math.abs(current - pendingSeek) < 1.5 || Date.now() - pendingSeekAt > 5000) {
+        if (pendingSeekSettled(current)) {
             pendingSeek = null;
         }
+        syncSeekFill(ui);
         return;
     }
     if (!isSeeking) {
         ui.seek.value = String(Math.min(current, duration));
         ui.current.textContent = formatTime(current);
     }
+    syncSeekFill(ui);
+}
+
+/* UI-only: keep the scrubber's played/remaining split (--progress) in sync
+   with the existing seek value; no seek logic is touched. */
+function syncSeekFill(ui) {
+    const total = Number(ui.seek.max) || 0;
+    const at = Number(ui.seek.value) || 0;
+    const pct = total > 0 ? Math.min(100, Math.max(0, (at / total) * 100)) : 0;
+    ui.seek.style.setProperty("--progress", `${pct}%`);
+}
+
+/* Keep showing the committed target position until the player has actually
+   reached it. On slow / unstable connections the embed can take a while to
+   buffer the new position, so the classic short timeout made the thumb snap
+   back and the song appear "stuck". While the player is still buffering we
+   allow a much longer grace period; once it has definitely given up we return
+   the thumb to the real position so the UI never lies. */
+function pendingSeekSettled(current) {
+    if (seekVersion !== trackVersion) return true;
+    if (Math.abs(current - pendingSeek) < 1.5) return true;
+    let buffering = false;
+    try {
+        buffering = player.getPlayerState() === YT_STATE.BUFFERING;
+    } catch {}
+    const age = Date.now() - pendingSeekAt;
+    return age > (buffering ? 15000 : 6000);
 }
 
 export function startProgress(ui) {
@@ -222,14 +278,45 @@ export function commitSeek(ui) {
     // still-settling previous seek (main.js deduplicates pointerup/change pairs,
     // so each user gesture commits exactly once here).
     pendingSeek = Number(ui.seek.value);
+    if (!Number.isFinite(pendingSeek) || pendingSeek < 0) pendingSeek = 0;
     pendingSeekAt = Date.now();
+    seekVersion = trackVersion;
     isSeeking = false;
+    const wasPlaying = (() => {
+        try { return player.getPlayerState() === YT_STATE.PLAYING; } catch { return false; }
+    })();
     try {
         player.seekTo(pendingSeek, true);
     } catch {}
+    // On flaky connections a seek can drop an actively playing embed into a
+    // paused/idle state that never resumes on its own. If we were playing
+    // before the gesture, make ONE gentle resume attempt shortly after the
+    // seek so the song never gets stuck paused. Never interrupts a healthy
+    // buffering/playing flow, and never fires during a playlist switch.
+    if (wasPlaying) scheduleSeekResume(trackVersion);
+}
+
+function scheduleSeekResume(versionAtSeek) {
+    if (seekRestoreTimer) {
+        clearTimeout(seekRestoreTimer);
+        seekRestoreTimer = null;
+    }
+    seekRestoreTimer = setTimeout(() => {
+        seekRestoreTimer = null;
+        if (!ready || !player || playlistSwitching) return;
+        // Track changed since the seek was committed — never resume into the
+        // newly cued song.
+        if (versionAtSeek !== trackVersion) return;
+        let state;
+        try { state = player.getPlayerState(); } catch { return; }
+        if (state === YT_STATE.PAUSED || state === YT_STATE.CUED || state === YT_STATE.UNSTARTED) {
+            try { player.playVideo(); } catch {}
+        }
+    }, 700);
 }
 
 export function randomTrack(onPlay) {
+    invalidateSeekState();
     const ids = player.getPlaylist() || [];
     if (ids.length < 2) { player.nextVideo(); return; }
     let index;
@@ -263,6 +350,7 @@ export function supportsFullPlaylist() {
  *   listType:"playlist" loading so playback still works.
  */
 export async function loadMoodPlaylist(moodKey) {
+    invalidateSeekState();
     const listId = MOOD_PLAYLISTS[moodKey]?.id || requestedPlaylistId;
 
     let ids = null;
@@ -340,6 +428,7 @@ export function initYouTubePlayer(ui, callbacks) {
                 onError() {
                     setTimeout(() => {
                         if (player && !playlistSwitching) {
+                            invalidateSeekState();
                             player.nextVideo();
                         }
                     }, 500);

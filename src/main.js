@@ -62,7 +62,6 @@ import {
     const $ = id => document.getElementById(id);
 
     const ui = {
-        online: $("onlineText"),
         console: $("console"),
         vuStrip: $("ledVuStrip"),
         bumper: $("bumperText"),
@@ -424,9 +423,9 @@ import {
         [ui.rainBtn, ui.rainBtnMobile].forEach(btn => {
             if (!btn) return;
             const label = btn.querySelector(".rain-btn__label");
-            if (label) label.textContent = rainOn ? "Rain ON" : "Rain";
+            if (label) label.textContent = rainOn ? "Raining" : "Rain";
             btn.setAttribute("aria-pressed", String(rainOn));
-            btn.setAttribute("title", rainOn ? "Rain ON — tap to stop" : "Rain");
+            btn.setAttribute("title", rainOn ? "Raining — tap to stop" : "Rain");
             btn.setAttribute("aria-label", rainOn ? "Turn rain mode off" : "Turn rain mode on");
         });
     }
@@ -462,9 +461,13 @@ import {
     };
 
     function rainDropCount() {
+        /* Density increased ~1.6-2× vs. the previous area/12000 [120–250]
+           formula so the drizzle reads clearly denser without stressing the
+           canvas: area/7600 with [190, 420] bounds. Still a single lightweight
+           stroke per drop per frame — safe on desktop and mobile. */
         const area = window.innerWidth * window.innerHeight;
-        const n = Math.round(area / 12000);
-        return Math.max(120, Math.min(250, n));
+        const n = Math.round(area / 7600);
+        return Math.max(190, Math.min(420, n));
     }
 
     function spawnRainDrops(count) {
@@ -664,6 +667,10 @@ import {
     ui.seek.addEventListener("input", () => {
         setSeekingState(true);
         ui.current.textContent = formatTime(ui.seek.value);
+        const seekTotal = Number(ui.seek.max) || 0;
+        const seekAt = Number(ui.seek.value) || 0;
+        const seekPct = seekTotal > 0 ? Math.min(100, Math.max(0, (seekAt / seekTotal) * 100)) : 0;
+        ui.seek.style.setProperty("--progress", `${seekPct}%`);
     });
 
     ui.seek.addEventListener("pointerup", event => {
@@ -748,10 +755,12 @@ import {
         }
     });
 
-    // 10. Live Presence (+555) — dynamic, presentation-only change
+    // 10. Live Presence — the sole online indicator on the page is the one
+    // inside the display board. The visible number is the real active count
+    // from Supabase presence; the board's "Connecting…" placeholder is
+    // replaced once presence reports in. No duplicate header beacon exists.
     window.addEventListener("load", () => {
         initPresence(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, count => {
-            ui.online.textContent = `🟢 ${count} मुसाफ़िर`;
             displayBoard.setOnline(count);
         });
     });

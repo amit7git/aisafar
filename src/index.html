@@ -177,31 +177,51 @@
                 <span id="clockMinute">00</span>
                 <span class="clock-period" id="clockPeriod">AM</span>
             </div>
-
-            <!-- Mobile-only Rain control — reuses the single shared rain engine -->
-            <button class="rain-btn rain-btn--mobile" id="rainBtnMobile" type="button" aria-pressed="false" aria-label="Toggle rain mode" title="Rain">
-                <span class="rain-btn__icon" aria-hidden="true">🌧️</span>
-                <span class="rain-btn__label">Rain</span>
-            </button>
         </div>
 
-        <div class="highway header-item">
-            <span id="onlineText" lang="hi">🟢 555 मुसाफ़िर</span>
-        </div>
-
+        <!-- Live presence / speed are NOT shown in the header anymore — both
+             live inside the display board (speed + ● online telemetry row),
+             so the header stays clean: TIME ... BOOK TICKET | INFO. -->
         <div class="header-actions header-item">
             <button class="book-ticket-btn" id="bookTicketBtn" type="button" aria-haspopup="dialog" title="Book Ticket">
                 <span class="book-ticket-btn__icon" aria-hidden="true">🎫</span>
                 <span class="book-ticket-btn__label">Book Ticket</span>
             </button>
+            <button class="info-button" id="infoBtn" type="button" aria-label="Information" title="Information">i</button>
         </div>
+
+        <!-- Mobile-only Rain control — reuses the single shared rain engine.
+             A direct .header child so the mobile header can give it its own
+             dedicated row; hidden (display:none) on desktop, so desktop
+             rendering is identical. -->
+        <button class="rain-btn rain-btn--mobile" id="rainBtnMobile" type="button" aria-pressed="false" aria-label="Toggle rain mode" title="Rain">
+            <span class="rain-btn__icon" aria-hidden="true">🌧️</span>
+            <span class="rain-btn__label">Rain</span>
+        </button>
     </header>
 
-    <!-- ===== RADIO SAFAR DISPLAY BOARD (top-centre premium coach LED board) ===== -->
+    <!-- ===== RADIO SAFAR DISPLAY BOARD (top-centre premium coach LED board) =====
+         Fixed to the very top (not moved in this change), centred, z-index 15.
+         3 internal rows:
+           1. telemetry + welcome:  speed (left) ... STATIC
+              "❤️ Welcome to Radio Safar ❤️" (centre) ... ● online count
+              (right, green). Exactly ONE speed + ONE online element.
+           2. promo only:  scrolling promotional ticker (~20 messages, slow
+              CSS animation, no <marquee>)
+           3. route:  CURRENT → NEXT → UPCOMING (two longer green blinking
+              arrows, blinking ALTERNATELY) -->
     <section class="display-board" id="displayBoard" aria-label="Radio Safar journey board">
         <div class="db-text">
+            <span class="db-meta" id="dbMeta" aria-live="off">
+                <span class="db-speed"><span class="db-speed__value" id="dbSpeed">68</span><span class="db-speed__unit">KM/H</span></span>
+                <span class="db-welcome" id="dbWelcome" role="status" aria-label="Welcome to Radio Safar">❤️ Welcome to Radio Safar ❤️</span>
+                <span class="db-live"><span class="db-live__dot" aria-hidden="true">●</span><span class="db-live__count" id="dbOnline">Connecting…</span></span>
+            </span>
             <span class="db-head" id="dbHead">
-                <span class="db-head__status" id="dbLine1">WELCOME TO RADIO SAFAR</span>
+                <span class="db-promo" id="dbPromo">
+                    <span class="db-promo__static" aria-hidden="false">Radio Safar — Every mood has a journey</span>
+                    <span class="db-promo__track" id="dbPromoTrack" aria-hidden="true"></span>
+                </span>
             </span>
             <span class="db-navi" id="dbNavi" aria-live="off">
                 <span class="db-nav db-nav--cur">
@@ -210,16 +230,16 @@
                 </span>
                 <span class="db-arrow" aria-hidden="true">→</span>
                 <span class="db-nav db-nav--nxt">
-                    <span class="db-loc" id="dbCityNext">TUMAKURU</span>
+                    <span class="db-loc" id="dbCityNxt">TUMAKURU</span>
                     <span class="db-nav-label">NEXT</span>
                 </span>
-            </span>
-            <span class="db-meta" id="dbMeta" aria-live="off">
-                <span class="db-speed"><span class="db-speed__value" id="dbSpeed">68</span><span class="db-speed__unit">KM/H</span></span>
-                <span class="db-live"><span class="db-live__dot" aria-hidden="true">●</span><span class="db-live__count" id="dbOnline">555 Online</span></span>
+                <span class="db-arrow db-arrow--alt" aria-hidden="true">→</span>
+                <span class="db-nav db-nav--upc">
+                    <span class="db-loc" id="dbCityUpc">CHITRADURGA</span>
+                    <span class="db-nav-label">UPCOMING</span>
+                </span>
             </span>
         </div>
-        <button class="info-button" id="infoBtn" type="button" aria-label="Information" title="Information">i</button>
     </section>
 
     <!-- ===== FIXED ANCHORED TRANSPARENT PLAYER CONTAINER ===== -->
@@ -235,20 +255,20 @@
                         <div class="art" id="cdArt"></div>
                     </div>
                     <div class="track-info">
-                        <div class="track-badge">
-                            <span>RADIO SAFAR</span>
+                        <div class="track-badge" role="img" aria-label="Radio Safar music visualiser">
                             <div class="sound-wave">
-                                <span></span><span></span><span></span>
+                                <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
                             </div>
                         </div>
                         <div class="track" id="trackTitle" aria-live="polite">Loading the road…</div>
                     </div>
                     <div class="safar-controls">
                         <button class="mood-button" id="moodBtn" type="button" aria-label="Open mood selector" aria-haspopup="dialog">
-                            <span class="mood-label">SAFAR</span>
+                            <span class="mood-label">Playlist</span>
                             <span class="mood-current" id="moodCurrent">90s Safar</span>
                         </button>
-                        <button class="control" id="playlistBtn" type="button" aria-label="Open playlist" aria-haspopup="dialog" title="Playlist">
+                        <button class="control" id="playlistBtn" type="button" aria-label="Open playlist" aria-haspopup="dialog" title="Songs">
+                            <span class="control-label">Songs</span>
                             <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h13v2H3V6zm0 5h13v2H3v-2zm0 5h9v2H3v-2zm15 0v-5h2v5h5v2h-5v5h-2v-5h-5v-2h5z"/></svg>
                         </button>
                     </div>
@@ -346,7 +366,7 @@
     <footer class="site-footer" aria-label="Site footer">Created with ❤️ by Amit Sahani</footer>
 
     <!-- ===== PLAYLIST MODAL ===== -->
-    <div class="modal" id="playlistModal" role="dialog" aria-modal="true" aria-labelledby="playlistHeading" aria-hidden="true">
+    <div class="modal modal--side" id="playlistModal" role="dialog" aria-modal="true" aria-labelledby="playlistHeading" aria-hidden="true">
         <div class="panel">
             <div class="panel-head">
                 <div>
@@ -362,7 +382,7 @@
     </div>
 
     <!-- ===== MOOD SELECTOR MODAL ===== -->
-    <div class="modal" id="moodModal" role="dialog" aria-modal="true" aria-labelledby="moodHeading" aria-hidden="true">
+    <div class="modal modal--side" id="moodModal" role="dialog" aria-modal="true" aria-labelledby="moodHeading" aria-hidden="true">
         <div class="panel">
             <div class="panel-head">
                 <div>
@@ -386,7 +406,7 @@
                 <div class="info-kicker">WELCOME TO</div>
                 <div class="info-heading" id="infoHeading">RADIO <span class="text-accent">SAFAR</span></div>
                 <div class="info-tagline">Every mood has a journey.</div>
-                <p class="info-blurb">A nostalgic highway radio gliding through India's evergreen melodies — for slow nights, open roads, and the songs that made the miles feel short.</p>
+                <p class="info-blurb">A nostalgic highway radio for evergreen Bollywood, 90s nostalgia and songs for every mood.</p>
             </div>
 
             <div class="info-divider" aria-hidden="true"><span></span></div>
@@ -424,20 +444,11 @@
                     <span class="feature-icon" aria-hidden="true">🎵</span>
                     <span><strong>1,000+ handpicked songs</strong> — evergreen Bollywood, 90s nostalgia, and highway anthems.</span>
                 </div>
-                <div class="feature">
-                    <span class="feature-icon" aria-hidden="true">📻</span>
-                    <span><strong>Live highway stream</strong> — a synchronized journey for night drives and deep focus.</span>
-                </div>
-            </div>
-
-            <div class="song-request-box">
-                <span class="request-label">Want your favourite song on Radio Safar?</span>
-                <span>DM <a class="inline-link" href="https://www.instagram.com/iamith/" target="_blank" rel="noopener noreferrer">@iamith</a> your suggestions to get them featured in our upcoming Sunday release.</span>
             </div>
 
             <div class="disclaimer">
                 <strong>Disclaimer:</strong>
-                <span>All songs featured on Radio Safar are streamed via YouTube playlists. We respect and honor all original artists, composers, record labels, and copyright owners. This project is created purely for non-commercial enjoyment and music lovers.</span>
+                <span>Music is streamed via YouTube playlists — a non-commercial project for music lovers. All rights belong to the respective artists, composers, and copyright owners.</span>
             </div>
         </div>
     </div>
@@ -463,7 +474,7 @@
                 <form id="ticketForm" novalidate>
                     <label class="tf-field">
                         <span class="tf-label">Passenger Name <span class="req">*</span></span>
-                        <input id="tfName" name="name" type="text" placeholder="Amit Sahani" maxlength="60" autocomplete="off" spellcheck="false">
+                        <input id="tfName" name="name" type="text" placeholder="Your name" maxlength="60" autocomplete="off" spellcheck="false">
                         <span class="tf-error" id="errName"></span>
                     </label>
 
